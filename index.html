@@ -1569,24 +1569,47 @@ function getCategoryEmoji(cat) {
   if(c.includes('av') || c.includes('tech') || c.includes('audio')) return '🎤';
   return '✨';
 }
-// CATALOG_PAGES built dynamically from Supabase categories after inventory loads
+// CATALOG_PAGES built from Supabase categories table
 let CATALOG_PAGES=[{id:"all", label:"All Pieces", cats:null}];
 
-function buildCatalogFromInventory(){
-  const cats=[...new Set(INVENTORY.map(i=>i.cat).filter(Boolean))].sort();
-  CATALOG_PAGES=[
-    {id:"all", label:"All Pieces", cats:null},
-    ...cats.map(c=>({
-      id: c.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
-      label: c,
-      cats: [c]
-    }))
-  ];
-  const bar=document.getElementById('catBar');
-  bar.innerHTML=CATALOG_PAGES.map(p=>
-    `<a class="cat-bar-item ${p.id==='all'?'active':''}" href="#" onclick="showInventoryPage('${p.id}');return false;" id="cat-${p.id}">${p.label}</a>`
-  ).join('');
+async function loadCategories(){
+  try{
+    const res=await fetch(SUPABASE_URL+'/rest/v1/categories?select=name&order=name.asc',{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+    });
+    const data=await res.json();
+    if(!Array.isArray(data)||!data.length) throw new Error('no categories');
+    CATALOG_PAGES=[
+      {id:"all", label:"All Pieces", cats:null},
+      ...data.map(function(c){return{
+        id: c.name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
+        label: c.name,
+        cats: [c.name]
+      }})
+    ];
+  }catch(e){
+    // Fallback: derive from loaded inventory
+    const cats=[...new Set(INVENTORY.map(function(i){return i.cat}).filter(Boolean))].sort();
+    CATALOG_PAGES=[
+      {id:"all", label:"All Pieces", cats:null},
+      ...cats.map(function(c){return{
+        id: c.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
+        label: c, cats:[c]
+      }})
+    ];
+  }
+  buildCatBar();
 }
+
+function buildCatBar(){
+  const bar=document.getElementById('catBar');
+  bar.innerHTML=CATALOG_PAGES.map(function(p){
+    return'<a class="cat-bar-item '+(p.id==='all'?'active':'')+'" href="#" onclick="showInventoryPage(\''+p.id+'\');return false;" id="cat-'+p.id+'">'+p.label+'</a>';
+  }).join('');
+}
+
+// Keep this for compatibility — called after inventory loads
+function buildCatalogFromInventory(){ buildCatBar(); }
 const FAQS=[
   {q:"How does the rental process work?",a:"Browse our inventory and save items to your wishlist. When you're ready, send us an inquiry with your event date and we'll confirm availability, finalize quantities, and send a custom quote within 24 hours."},
   {q:"Do you deliver and set up?",a:"Yes — delivery, placement, and pickup are available throughout Kansas City and Nebraska. Our team handles all loading, unloading, and placement so you can focus on your event."},
@@ -1841,7 +1864,7 @@ function toggleFaq(id){
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
-renderFaq();eduGoTo(0);loadInventory();
+renderFaq();eduGoTo(0);loadCategories();loadInventory();
 // Hide submit form until items are added
 (function(){var f=document.getElementById('wlForm');if(f)f.style.display='none';})();
 </script>
