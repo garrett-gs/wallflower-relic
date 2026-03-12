@@ -1715,7 +1715,7 @@ function setCatBarActive(p){
 function itemCard(item){
   const saved=wishlist.some(w=>w.id===item.id);
   const imgContent=item.image
-    ? `<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'"/>${item.emoji}`
+    ? `<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain;position:absolute;inset:0;background:var(--cream)" onerror="this.style.display='none'"/>${item.emoji}`
     : `${item.emoji}`;
   const priceStr = item.price > 0 ? `$${item.price.toLocaleString('en-US', {minimumFractionDigits:0})}` : '';
   return `<div class="item-card" onclick="openItem(${item.id})">
@@ -1804,7 +1804,7 @@ function setSubFilter(t){currentSubFilter=t;renderInventory()}
 
 function openItem(id){
   const item=INVENTORY.find(i=>i.id===id);if(!item)return;currentItemId=id;
-  const di=document.getElementById('detailImg');if(item.image){di.innerHTML=`<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover" onerror="this.outerHTML='${item.emoji}'"/>`;di.style.fontSize='0';}else{di.textContent=item.emoji;di.style.fontSize='';};
+  const di=document.getElementById('detailImg');if(item.image){di.innerHTML=`<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain" onerror="this.outerHTML='${item.emoji}'"/>`;di.style.fontSize='0';}else{di.textContent=item.emoji;di.style.fontSize='';};
   document.getElementById('detailCat').textContent=item.cat;
   document.getElementById('detailName').textContent=item.name;
   document.getElementById('detailPrice').innerHTML='';
