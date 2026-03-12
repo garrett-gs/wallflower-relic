@@ -1527,7 +1527,7 @@ let INVENTORY = [];
 
 async function loadInventory() {
   try {
-    const res = await fetch(SUPABASE_URL + '/rest/v1/inventory?select=*&on_website=eq.true&order=name.asc&limit=1000', {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/inventory?select=*&order=name.asc&limit=1000', {
       headers: {
         'apikey': SUPABASE_KEY,
         'Authorization': 'Bearer ' + SUPABASE_KEY
@@ -1547,6 +1547,10 @@ async function loadInventory() {
       emoji: getCategoryEmoji(item.category)
     }));
     buildCatalogFromInventory();
+    console.log('Inventory loaded:', INVENTORY.length, 'items');
+    console.log('Sample item:', INVENTORY[0]);
+    console.log('CATALOG_PAGES:', CATALOG_PAGES.map(p=>p.label));
+    console.log('currentPageId:', currentPageId);
     renderInventory();
     updateWishlistUI();
   } catch(e) {
