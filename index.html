@@ -1782,7 +1782,7 @@ function renderInventory(){
       });
       if(!items.length) return;
       totalCount += items.length;
-      html += `<div style="grid-column:1/-1;padding:40px 0 16px;font-family:var(--serif);font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:var(--dark);border-top:1px solid var(--line);margin-top:8px">${h.heading}</div>`;
+      html += `<div style="grid-column:1/-1;padding:40px 0 16px;font-family:var(--serif);font-size:28px;letter-spacing:0.08em;text-transform:uppercase;color:var(--dark);border-top:1px solid var(--line);margin-top:8px">${h.heading}</div>`;
       html += items.map(itemCard).join('');
     });
     document.getElementById('itemCount').textContent=`${totalCount} piece${totalCount!==1?'s':''}`;
