@@ -1604,8 +1604,9 @@ async function loadCategories(){
     ];
   }
   buildCatBar();
+  // Re-render inventory now that categories are ready
+  if(INVENTORY.length) renderInventory();
 }
-
 function buildCatBar(){
   const bar=document.getElementById('catBar');
   bar.innerHTML=CATALOG_PAGES.map(function(p){
@@ -1654,6 +1655,7 @@ function getPageItems(p){
 function renderInventory(){
   const items=getPageItems(currentPageId);
   const page=CATALOG_PAGES.find(p=>p.id===currentPageId);
+  if(!page) return;
   const titleEl=document.getElementById('collectionTitle');
   const parts=page.label.split(' ');
   titleEl.innerHTML=parts.length>1?`${parts[0]} <em>${parts.slice(1).join(' ')}</em>`:`<em>${page.label}</em>`;
