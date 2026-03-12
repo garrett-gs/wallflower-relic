@@ -420,8 +420,14 @@
     .wl-qty-btn:hover{background:var(--primary);color:#fff}
     .wl-qty-num{
       font-family:var(--sans);font-size:12px;font-weight:600;
-      color:var(--dark);min-width:18px;text-align:center;
+      color:var(--dark);width:38px;text-align:center;
+      border:1px solid var(--grey-light);border-radius:3px;
+      padding:2px 4px;background:var(--white);
+      -moz-appearance:textfield;
     }
+    .wl-qty-num::-webkit-outer-spin-button,
+    .wl-qty-num::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+    .wl-qty-num:focus{outline:none;border-color:var(--primary);}
 
     /* Submit section inside the card */
     .wl-panel-form{
@@ -1898,12 +1904,29 @@ function changeQty(id, delta){
     newQty = maxQty;
     item.qty = newQty;
     var el = document.getElementById('qty-'+id);
-    if(el){ el.textContent = newQty; el.style.color='#c0392b'; setTimeout(function(){ el.style.color=''; }, 1200); }
+    if(el){ el.value = newQty; el.style.color='#c0392b'; setTimeout(function(){ el.style.color=''; }, 1200); }
     return;
   }
   item.qty = newQty;
   var el = document.getElementById('qty-'+id);
-  if(el){ el.textContent = item.qty; el.style.color=''; }
+  if(el){ el.value = item.qty; el.style.color=''; }
+}
+function setQty(id, val){
+  var item = wishlist.find(function(i){ return i.id===id; });
+  if(!item) return;
+  var n = parseInt(val);
+  if(!isNaN(n) && n >= 1) item.qty = n;
+}
+function validateQty(id, inputEl){
+  var item = wishlist.find(function(i){ return i.id===id; });
+  if(!item) return;
+  var invItem = INVENTORY.find(function(i){ return i.id===id; });
+  var maxQty = (invItem && invItem.avail > 0) ? invItem.avail : 999;
+  var n = parseInt(inputEl.value);
+  if(isNaN(n) || n < 1) n = 1;
+  if(n > maxQty){ n = maxQty; inputEl.style.color='#c0392b'; setTimeout(function(){ inputEl.style.color=''; }, 1200); }
+  item.qty = n;
+  inputEl.value = n;
 }
 function updateWishlistUI(){
   var count=wishlist.length;
@@ -1924,7 +1947,7 @@ function updateWishlistUI(){
       var imgHtml=i.image
         ? '<div class="wl-item-thumb"><img src="'+i.image+'" alt="'+i.name+'" onerror="this.parentNode.innerHTML=\''+i.emoji+'\'"></div>'
         : '<div class="wl-item-thumb">'+i.emoji+'</div>';
-      return '<div class="wl-item">'+imgHtml+'<div class="wl-item-info"><div class="wl-item-name">'+i.name+'</div><div class="wl-item-cat">'+i.cat+'</div></div><div class="wl-qty"><button class="wl-qty-btn" onclick="changeQty('+i.id+',-1)">−</button><span class="wl-qty-num" id="qty-'+i.id+'">'+i.qty+'</span><button class="wl-qty-btn" onclick="changeQty('+i.id+',1)">+</button></div><button class="wl-item-remove" onclick="toggleWishlist('+i.id+')" title="Remove">✕</button></div>';
+      return '<div class="wl-item">'+imgHtml+'<div class="wl-item-info"><div class="wl-item-name">'+i.name+'</div><div class="wl-item-cat">'+i.cat+'</div></div><div class="wl-qty"><button class="wl-qty-btn" onclick="changeQty('+i.id+',-1)">−</button><input class="wl-qty-num" id="qty-'+i.id+'" type="number" min="1" value="'+i.qty+'" oninput="setQty('+i.id+',this.value)" onblur="validateQty('+i.id+',this)"/><button class="wl-qty-btn" onclick="changeQty('+i.id+',1)">+</button></div><button class="wl-item-remove" onclick="toggleWishlist('+i.id+')" title="Remove">✕</button></div>';
     }).join('');
   }
   var successEl=document.getElementById('wishlistSuccess');
