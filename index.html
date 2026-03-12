@@ -1891,9 +1891,19 @@ function toggleWishlistSidebar(){
 function changeQty(id, delta){
   var item = wishlist.find(function(i){ return i.id===id; });
   if(!item) return;
-  item.qty = Math.max(1, (item.qty||1) + delta);
+  var invItem = INVENTORY.find(function(i){ return i.id===id; });
+  var maxQty = (invItem && invItem.avail > 0) ? invItem.avail : 999;
+  var newQty = Math.max(1, (item.qty||1) + delta);
+  if(newQty > maxQty){
+    newQty = maxQty;
+    item.qty = newQty;
+    var el = document.getElementById('qty-'+id);
+    if(el){ el.textContent = newQty; el.style.color='#c0392b'; setTimeout(function(){ el.style.color=''; }, 1200); }
+    return;
+  }
+  item.qty = newQty;
   var el = document.getElementById('qty-'+id);
-  if(el) el.textContent = item.qty;
+  if(el){ el.textContent = item.qty; el.style.color=''; }
 }
 function updateWishlistUI(){
   var count=wishlist.length;
