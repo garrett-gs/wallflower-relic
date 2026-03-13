@@ -1480,7 +1480,7 @@ function renderInventory() {
       i.name.toLowerCase().includes(q) || i.cat.toLowerCase().includes(q) || i.tags.some(t => t.includes(q))
     );
     titleEl.innerHTML = `Search: <em>${currentSearchQuery}</em>`;
-    if (subEl) { subEl.innerHTML = ''; subEl.style.display = 'none'; }
+    if (subEl) { subEl.innerHTML = ''; subEl.style.display = 'none'; subEl.style.margin = '0'; subEl.style.padding = '0'; }
     document.getElementById('itemCount').textContent = `${filtered.length} piece${filtered.length !== 1 ? 's' : ''}`;
     grid.innerHTML = filtered.length ? filtered.map(renderCard).join('') : `<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items found.</div>`;
     return;
@@ -1489,7 +1489,7 @@ function renderInventory() {
   if (currentPageId === 'all') {
     const items = INVENTORY.filter(i => i.tags.some(t => ALL_VALID_TAGS.includes(t)));
     titleEl.innerHTML = 'All <em>Pieces</em>';
-    if (subEl) { subEl.innerHTML = ''; subEl.style.display = 'none'; }
+    if (subEl) { subEl.innerHTML = ''; subEl.style.display = 'none'; subEl.style.margin = '0'; subEl.style.padding = '0'; }
     document.getElementById('itemCount').textContent = `${items.length} piece${items.length !== 1 ? 's' : ''}`;
     grid.innerHTML = items.length ? items.map(renderCard).join('') : `<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items available.</div>`;
     return;
@@ -1504,7 +1504,7 @@ function renderInventory() {
   titleEl.innerHTML = parts.length > 1 ? `${parts[0]} <em>${parts.slice(1).join(' ')}</em>` : `<em>${catName}</em>`;
 
   // No sub-filter buttons
-  if (subEl) { subEl.innerHTML = ''; subEl.style.display = 'none'; }
+  if (subEl) { subEl.innerHTML = ''; subEl.style.display = 'none'; subEl.style.margin = '0'; subEl.style.padding = '0'; }
 
   // Get items — either filtered by sub-heading tag or all tags in this category
   const allCatTags = catDef.headings.flatMap(h => h.tags);
