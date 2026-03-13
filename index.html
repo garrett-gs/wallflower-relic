@@ -1401,30 +1401,45 @@
 const SUPABASE_URL = "https://mgwvpkezvuswvbkzwysx.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs";
 
-let INVENTORY = [];
+// ── Category → Headings → Tags map ──
+const CATEGORY_MAP = {
+  "Accents":            { headings: [{ label: "Styling Accents", tags: ["styling"] }] },
+  "Backdrops":          { headings: [{ label: "Architectural", tags: ["architecture"] }, { label: "Display", tags: ["display"] }, { label: "Editorial", tags: ["edit"] }, { label: "Minimal", tags: ["minimal"] }, { label: "Interactive", tags: ["interactive"] }, { label: "Flower Wall", tags: ["flowerwall"] }] },
+  "Bars & Beverage":    { headings: [{ label: "Bars", tags: ["bars"] }, { label: "Barbacks", tags: ["barback"] }, { label: "Shelving", tags: ["beverage"] }] },
+  "Carts":              { headings: [{ label: "Carts", tags: ["carts"] }, { label: "Umbrellas", tags: ["umbrella"] }] },
+  "Centerpieces":       { headings: [{ label: "Bud Vases", tags: ["bud"] }, { label: "Candle Holders", tags: ["candle holder"] }, { label: "Vessels", tags: ["vessels"] }, { label: "Votives", tags: ["votive"] }] },
+  "Ceremony":           { headings: [{ label: "Arches", tags: ["arch"] }, { label: "Columns", tags: ["columns"] }, { label: "Crosses", tags: ["crosses"] }, { label: "Floral Arches", tags: ["floralarch"] }, { label: "Platforms & Risers", tags: ["platform"] }] },
+  "Facades":            { headings: [{ label: "Facades", tags: ["facade"] }] },
+  "Furniture & Lounge": { headings: [{ label: "Sofas", tags: ["sofa"] }, { label: "Chairs", tags: ["seating"] }, { label: "Tables", tags: ["tables"] }, { label: "Soft Goods", tags: ["soft goods"] }] },
+  "Lighting":           { headings: [{ label: "Wall Lighting", tags: ["wall"] }, { label: "Lamps", tags: ["lamp"] }] },
+  "Signage":            { headings: [{ label: "Mirrors", tags: ["mirrors"] }, { label: "Welcome Signs", tags: ["welcome"] }] },
+  "Tablescapes":        { headings: [{ label: "Chargers", tags: ["charger"] }, { label: "Glassware", tags: ["glassware"] }, { label: "Tea Sets", tags: ["tea"] }] },
+};
 
+const ALL_VALID_TAGS = Object.values(CATEGORY_MAP).flatMap(c => c.headings.flatMap(h => h.tags));
+
+let INVENTORY = [];
+let wishlist = [], wishlistQtys = {};
+let currentPageId = "all", currentSubFilter = null, currentItemId = null, currentSearchQuery = null;
+
+// ── Load Inventory ────────────────────────────────────────────────────────────
 async function loadInventory() {
   try {
-    const res = await fetch(SUPABASE_URL + '/rest/v1/inventory?select=*&order=name.asc&limit=1000', {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY
-      }
+    const res = await fetch(SUPABASE_URL + '/rest/v1/inventory?select=*&on_website=eq.true&order=name.asc&limit=1000', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
     });
     const data = await res.json();
-    INVENTORY = data.map((item, i) => ({
-      id: i,
-      dbId: item.id,
+    INVENTORY = data.map(item => ({
+      id: item.id,
       name: item.name || '',
       cat: item.category || 'Uncategorized',
       price: parseFloat(item.price) || 0,
       avail: parseInt(item.in_stock) || 0,
       desc: item.description || '',
-      tags: item.tags ? item.tags.split(',').map(t => t.trim().toLowerCase()) : [item.category ? item.category.toLowerCase() : 'other'],
+      tags: item.tags ? item.tags.split(',').map(t => t.trim().toLowerCase()) : [],
       image: item.image_url || null,
-      emoji: getCategoryEmoji(item.category)
     }));
-    buildCatalogFromInventory();
+    buildCategoryBar();
     renderInventory();
     updateWishlistUI();
   } catch(e) {
@@ -1433,180 +1448,203 @@ async function loadInventory() {
   }
 }
 
-function getCategoryEmoji(cat) {
-  if(!cat) return '✨';
-  const c = cat.toLowerCase();
-  if(c.includes('table')) return '🪵';
-  if(c.includes('chair') || c.includes('seat') || c.includes('lounge') || c.includes('furniture')) return '🪑';
-  if(c.includes('light')) return '💡';
-  if(c.includes('bar') || c.includes('cater') || c.includes('beverage')) return '🥂';
-  if(c.includes('linen') || c.includes('fabric') || c.includes('drape')) return '🎀';
-  if(c.includes('tent') || c.includes('stage')) return '⛺';
-  if(c.includes('decor') || c.includes('floral')) return '✨';
-  if(c.includes('backdrop') || c.includes('sign')) return '🖼️';
-  if(c.includes('av') || c.includes('tech') || c.includes('audio')) return '🎤';
-  return '✨';
-}
-// CATALOG_PAGES built dynamically from Supabase categories after inventory loads
-let CATALOG_PAGES=[{id:"all", label:"All Pieces", cats:null}];
-
-function buildCatalogFromInventory(){
-  const cats=[...new Set(INVENTORY.map(i=>i.cat).filter(Boolean))].sort();
-  CATALOG_PAGES=[
-    {id:"all", label:"All Pieces", cats:null},
-    ...cats.map(c=>({
-      id: c.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
-      label: c,
-      cats: [c]
-    }))
-  ];
-  const bar=document.getElementById('catBar');
-  bar.innerHTML=CATALOG_PAGES.map(p=>
-    `<a class="cat-bar-item ${p.id==='all'?'active':''}" href="#" onclick="showInventoryPage('${p.id}');return false;" id="cat-${p.id}">${p.label}</a>`
-  ).join('');
-}
-const FAQS=[
-  {q:"How does the rental process work?",a:"Browse our inventory and save items to your wishlist. When you're ready, send us an inquiry with your event date and we'll confirm availability, finalize quantities, and send a custom quote within 24 hours."},
-  {q:"Do you deliver and set up?",a:"Yes — delivery, placement, and pickup are available throughout Kansas City and Nebraska. Our team handles all loading, unloading, and placement so you can focus on your event."},
-  {q:"How far in advance should I reserve items?",a:"We recommend reserving 3–6 months in advance for weddings and large events, and 4–6 weeks for smaller gatherings. Popular pieces book quickly during peak season (May–October)."},
-  {q:"Can I see the pieces in person before booking?",a:"Absolutely. We welcome visits to our warehouse by appointment. Contact us to schedule a walkthrough."},
-  {q:"What if something gets damaged?",a:"We include a small damage waiver with every rental that covers normal wear and accidental minor damage. Significant damage beyond normal use is charged at repair or replacement cost."},
-  {q:"Can you accommodate custom requests?",a:"Yes. We offer custom fabrication for neon signs, floral installations, and specialty backdrops through our network of local artisans."},
-  {q:"What's your cancellation policy?",a:"Cancellations more than 60 days out receive a full deposit refund. 30–60 days forfeit 50%. Within 30 days, deposits are non-refundable."},
-  {q:"Do you serve outside Kansas City and Nebraska?",a:"Our primary service area is Kansas City metro and Nebraska. Contact us for events in surrounding states — we can often accommodate travel for larger orders."},
-];
-
-let wishlist=[],currentPageId="all",currentSubFilter=null,currentItemId=null,currentSearchQuery=null;
-
-function showPage(p){
-  var pages = document.querySelectorAll('.page');
-  for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
-  var navLinks = document.querySelectorAll('.nav-left a');
-  for(var i=0;i<navLinks.length;i++) navLinks[i].classList.remove('active');
-  var target = document.getElementById('page-'+p);
-  if(target) target.classList.add('active');
-  var navEl = document.getElementById('nav-'+p);
-  if(navEl) navEl.classList.add('active');
-  window.scrollTo(0,0);
-  if(p==='inventory') renderInventory();
-  if(p==='faq') renderFaq();
-}
-function showInventoryPage(p){currentPageId=p;currentSubFilter=null;setCatBarActive(p);showPage('inventory')}
-function setCatBarActive(p){
-  document.querySelectorAll('.cat-bar-item').forEach(el=>el.classList.remove('active'));
-  const el=document.getElementById('cat-'+p);if(el)el.classList.add('active');
-}
-function getPageItems(p){
-  const pg=CATALOG_PAGES.find(x=>x.id===p);
-  if(!pg||!pg.cats)return INVENTORY;
-  return INVENTORY.filter(i=>pg.cats.includes(i.cat));
-}
-function renderInventory(){
-  const items=getPageItems(currentPageId);
-  const page=CATALOG_PAGES.find(p=>p.id===currentPageId);
-  const titleEl=document.getElementById('collectionTitle');
-  const parts=page.label.split(' ');
-  titleEl.innerHTML=parts.length>1?`${parts[0]} <em>${parts.slice(1).join(' ')}</em>`:`<em>${page.label}</em>`;
-  const subEl=document.getElementById('subCollections');
-  subEl.innerHTML='';
-  const filtered=currentSearchQuery
-    ? INVENTORY.filter(i=>i.name.toLowerCase().includes(currentSearchQuery)||i.cat.toLowerCase().includes(currentSearchQuery)||i.tags.some(t=>t.includes(currentSearchQuery)))
-    : (currentSubFilter?items.filter(i=>i.tags.includes(currentSubFilter)):items);
-  document.getElementById('itemCount').textContent=`${filtered.length} piece${filtered.length!==1?'s':''}`;
-  const grid=document.getElementById('itemGrid');
-  if(!filtered.length){grid.innerHTML=`<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items in this collection yet.</div>`;return}
-  grid.innerHTML=filtered.map(item=>{
-    const saved=wishlist.some(w=>w.id===item.id);
-    const imgContent=item.image?`<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'"/>${item.emoji}`:`${item.emoji}`;
-return`<div class="item-card" onclick="openItem(${item.id})"><div class="item-card-img" style="position:relative">${imgContent}<button class="item-card-heart ${saved?'saved':''}" onclick="event.stopPropagation();toggleWishlist(${item.id})" id="heart-${item.id}">${saved?'♥':'♡'}</button></div><div class="item-card-body"><div class="item-card-cat">${item.cat}</div><div class="item-card-name">${item.name}</div><div class="item-card-desc">${item.desc}</div><div class="item-card-footer"><div class="item-card-price">$${item.price}<span>/day</span></div><div class="item-avail ${item.avail>0?'yes':'no'}">${item.avail>0?'Available':'Sold Out'}</div></div></div></div>`;
+// ── Category Bar ──────────────────────────────────────────────────────────────
+function buildCategoryBar() {
+  const bar = document.getElementById('catBar');
+  if (!bar) return;
+  const cats = ['all', ...Object.keys(CATEGORY_MAP)];
+  bar.innerHTML = cats.map(c => {
+    const id = c === 'all' ? 'all' : c.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const label = c === 'all' ? 'All Pieces' : c;
+    return `<a class="cat-bar-item ${c === 'all' ? 'active' : ''}" href="#" onclick="showInventoryPage('${id}');return false;" id="cat-${id}">${label}</a>`;
   }).join('');
 }
-function switchPage(p){currentPageId=p;currentSubFilter=null;setCatBarActive(p);renderInventory()}
-function setSubFilter(t){currentSubFilter=t;renderInventory()}
 
-function openItem(id){
-  const item=INVENTORY.find(i=>i.id===id);if(!item)return;currentItemId=id;
-  const di=document.getElementById('detailImg');if(item.image){di.innerHTML=`<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover" onerror="this.outerHTML='${item.emoji}'"/>`;di.style.fontSize='0';}else{di.textContent=item.emoji;di.style.fontSize='';};
-  document.getElementById('detailCat').textContent=item.cat;
-  document.getElementById('detailName').textContent=item.name;
-  document.getElementById('detailPrice').innerHTML=`$${item.price}<span>/day</span>`;
-  document.getElementById('detailDesc').textContent=item.desc;
-  const specs=[];
-  if(item.dims)specs.push(['Dimensions',item.dims]);
-  if(item.weight)specs.push(['Weight',item.weight]);
-  specs.push(['Availability',`${item.avail} available`]);
-  document.getElementById('detailSpecs').innerHTML=specs.map(([k,v])=>`<div class="item-detail-spec"><span class="item-detail-spec-label">${k}</span><span class="item-detail-spec-val">${v}</span></div>`).join('');
-  document.getElementById('detailTags').innerHTML=item.tags.map(t=>`<span class="item-tag">#${t}</span>`).join('');
+function showInventoryPage(p) { currentPageId = p; currentSubFilter = null; setCatBarActive(p); showPage('inventory'); }
+function setCatBarActive(p) {
+  document.querySelectorAll('.cat-bar-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('cat-' + p); if (el) el.classList.add('active');
+}
+
+// ── Render Inventory ──────────────────────────────────────────────────────────
+function renderInventory() {
+  const titleEl = document.getElementById('collectionTitle');
+  const subEl   = document.getElementById('subCollections');
+  const grid    = document.getElementById('itemGrid');
+  if (!titleEl || !grid) return;
+
+  // Search override
+  if (currentSearchQuery) {
+    const q = currentSearchQuery.toLowerCase();
+    const filtered = INVENTORY.filter(i =>
+      i.name.toLowerCase().includes(q) || i.cat.toLowerCase().includes(q) || i.tags.some(t => t.includes(q))
+    );
+    titleEl.innerHTML = `Search: <em>${currentSearchQuery}</em>`;
+    if (subEl) subEl.innerHTML = '';
+    document.getElementById('itemCount').textContent = `${filtered.length} piece${filtered.length !== 1 ? 's' : ''}`;
+    grid.innerHTML = filtered.length ? filtered.map(renderCard).join('') : `<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items found.</div>`;
+    return;
+  }
+
+  if (currentPageId === 'all') {
+    const items = INVENTORY.filter(i => i.tags.some(t => ALL_VALID_TAGS.includes(t)));
+    titleEl.innerHTML = 'All <em>Pieces</em>';
+    if (subEl) subEl.innerHTML = '';
+    document.getElementById('itemCount').textContent = `${items.length} piece${items.length !== 1 ? 's' : ''}`;
+    grid.innerHTML = items.length ? items.map(renderCard).join('') : `<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items available.</div>`;
+    return;
+  }
+
+  // Find category by slug
+  const catName = Object.keys(CATEGORY_MAP).find(k => k.toLowerCase().replace(/[^a-z0-9]+/g, '-') === currentPageId);
+  if (!catName) return;
+  const catDef = CATEGORY_MAP[catName];
+
+  const parts = catName.split(' ');
+  titleEl.innerHTML = parts.length > 1 ? `${parts[0]} <em>${parts.slice(1).join(' ')}</em>` : `<em>${catName}</em>`;
+
+  // Sub-filter buttons
+  if (subEl) {
+    subEl.innerHTML = catDef.headings.map(h =>
+      `<button class="sub-filter-btn ${currentSubFilter === h.tags[0] ? 'active' : ''}" onclick="setSubFilter('${h.tags[0]}')">${h.label}</button>`
+    ).join('');
+  }
+
+  // Get items — either filtered by sub-heading tag or all tags in this category
+  const allCatTags = catDef.headings.flatMap(h => h.tags);
+  let items;
+  if (currentSubFilter) {
+    items = INVENTORY.filter(i => i.tags.includes(currentSubFilter));
+  } else {
+    // Group by headings
+    document.getElementById('itemCount').textContent = '';
+    grid.innerHTML = catDef.headings.map(h => {
+      const hItems = INVENTORY.filter(i => h.tags.some(t => i.tags.includes(t)));
+      if (!hItems.length) return '';
+      return `<div style="grid-column:1/-1;font-family:var(--serif);font-size:28px;font-weight:400;color:var(--brown);margin:32px 0 16px;padding-top:8px;border-top:1px solid var(--grey-light)">${h.label}</div>${hItems.map(renderCard).join('')}`;
+    }).join('');
+    return;
+  }
+
+  document.getElementById('itemCount').textContent = `${items.length} piece${items.length !== 1 ? 's' : ''}`;
+  grid.innerHTML = items.length ? items.map(renderCard).join('') : `<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items in this collection yet.</div>`;
+}
+
+function setSubFilter(t) { currentSubFilter = currentSubFilter === t ? null : t; renderInventory(); }
+
+function renderCard(item) {
+  const saved = wishlist.some(w => w.id === item.id);
+  const imgContent = item.image
+    ? `<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain;position:absolute;inset:0;background:#f7f4ef" onerror="this.style.display='none'"/>✨`
+    : '✨';
+  return `<div class="item-card" onclick="openItem('${item.id}')"><div class="item-card-img" style="position:relative">${imgContent}<button class="item-card-heart ${saved ? 'saved' : ''}" onclick="event.stopPropagation();toggleWishlist('${item.id}')" id="heart-${item.id}">${saved ? '♥' : '♡'}</button></div><div class="item-card-body"><div class="item-card-cat">${item.cat}</div><div class="item-card-name">${item.name}</div><div class="item-card-desc">${item.desc}</div><div class="item-card-footer"><div class="item-card-price">$${item.price}<span>/day</span></div><div class="item-avail ${item.avail > 0 ? 'yes' : 'no'}">${item.avail > 0 ? 'Available' : 'Sold Out'}</div></div></div></div>`;
+}
+
+// ── Item Detail ───────────────────────────────────────────────────────────────
+function openItem(id) {
+  const item = INVENTORY.find(i => i.id === id); if (!item) return; currentItemId = id;
+  const di = document.getElementById('detailImg');
+  if (item.image) { di.innerHTML = `<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain;background:#f7f4ef"/>`; di.style.fontSize = '0'; }
+  else { di.textContent = '✨'; di.style.fontSize = ''; }
+  document.getElementById('detailCat').textContent = item.cat;
+  document.getElementById('detailName').textContent = item.name;
+  document.getElementById('detailPrice').innerHTML = `$${item.price}<span>/day</span>`;
+  document.getElementById('detailDesc').textContent = item.desc;
+  document.getElementById('detailSpecs').innerHTML = `<div class="item-detail-spec"><span class="item-detail-spec-label">Availability</span><span class="item-detail-spec-val">${item.avail} available</span></div>`;
+  document.getElementById('detailTags').innerHTML = item.tags.map(t => `<span class="item-tag">#${t}</span>`).join('');
   updateDetailBtn(id);
   document.getElementById('itemOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
 }
-function updateDetailBtn(id){
-  const saved=wishlist.some(w=>w.id===id);
-  const btn=document.getElementById('detailWishlistBtn');
-  btn.textContent=saved?'♥ Saved to Wishlist':'♡ Add to Wishlist';
-  btn.className=`btn-wishlist ${saved?'saved':'add'}`;
+function updateDetailBtn(id) {
+  const saved = wishlist.some(w => w.id === id);
+  const btn = document.getElementById('detailWishlistBtn');
+  btn.textContent = saved ? '♥ Saved to Wishlist' : '♡ Add to Wishlist';
+  btn.className = `btn-wishlist ${saved ? 'saved' : 'add'}`;
 }
-function closeItem(){document.getElementById('itemOverlay').classList.remove('open');document.body.style.overflow='';currentItemId=null}
-function handleOverlayClick(e){if(e.target===document.getElementById('itemOverlay'))closeItem()}
-function toggleDetailWishlist(){if(currentItemId===null)return;toggleWishlist(currentItemId);updateDetailBtn(currentItemId)}
+function closeItem() { document.getElementById('itemOverlay').classList.remove('open'); document.body.style.overflow = ''; currentItemId = null; }
+function handleOverlayClick(e) { if (e.target === document.getElementById('itemOverlay')) closeItem(); }
+function toggleDetailWishlist() { if (currentItemId === null) return; toggleWishlist(currentItemId); updateDetailBtn(currentItemId); }
 
-function toggleWishlist(id){
-  const item=INVENTORY.find(i=>i.id===id);if(!item)return;
-  const idx=wishlist.findIndex(w=>w.id===id);
-  if(idx>-1)wishlist.splice(idx,1);else wishlist.push(item);
+// ── Wishlist ──────────────────────────────────────────────────────────────────
+function toggleWishlist(id) {
+  const item = INVENTORY.find(i => i.id === id); if (!item) return;
+  const idx = wishlist.findIndex(w => w.id === id);
+  if (idx > -1) { wishlist.splice(idx, 1); delete wishlistQtys[id]; }
+  else { wishlist.push(item); wishlistQtys[id] = 1; }
   updateWishlistUI();
-  const heart=document.getElementById('heart-'+id);
-  if(heart){const saved=wishlist.some(w=>w.id===id);heart.className=`item-card-heart ${saved?'saved':''}`;heart.textContent=saved?'♥':'♡'}
+  const heart = document.getElementById('heart-' + id);
+  if (heart) { const saved = wishlist.some(w => w.id === id); heart.className = `item-card-heart ${saved ? 'saved' : ''}`; heart.textContent = saved ? '♥' : '♡'; }
 }
-function updateWishlistUI(){
-  const count=wishlist.length;
-  const badge=document.getElementById('navWishlistBadge');
-  if(badge){badge.textContent=count;badge.className=`nav-wishlist-badge ${count>0?'show':''}`}
-  const icon=document.getElementById('navHeartIcon');
-  if(icon)icon.textContent=count>0?'♥':'♡';
-  const el=document.getElementById('wishlistItems');
-  if(!wishlist.length){el.innerHTML='<div class="wishlist-empty">No items saved yet.<br/>Browse and click ♡ to save.</div>'}
-  else{el.innerHTML=wishlist.map(i=>`<div class="wishlist-item"><div class="wishlist-item-img">${i.emoji}</div><div><div class="wishlist-item-name">${i.name}</div><div class="wishlist-item-price">$${i.price}/day</div></div><button class="wishlist-item-remove" onclick="toggleWishlist(${i.id})">✕</button></div>`).join('')}
+function setWishlistQty(id, val) {
+  const item = INVENTORY.find(i => i.id === id); if (!item) return;
+  let qty = parseInt(val) || 1;
+  qty = Math.max(1, Math.min(qty, item.avail || 1));
+  wishlistQtys[id] = qty;
+  const input = document.getElementById('wlqty-' + id);
+  if (input) input.value = qty;
+}
+function updateWishlistUI() {
+  const count = wishlist.length;
+  // Nav badge
+  const badge = document.getElementById('navWishlistBadge');
+  if (badge) { badge.textContent = count; badge.className = `nav-wishlist-badge ${count > 0 ? 'show' : ''}`; }
+  const icon = document.getElementById('navHeartIcon');
+  if (icon) icon.textContent = count > 0 ? '♥' : '♡';
+  // FAB
+  const fab = document.getElementById('wishlistFab');
+  if (fab) { fab.style.display = count > 0 ? 'flex' : 'none'; const fb = document.getElementById('fabBadge'); if (fb) fb.textContent = count; }
+  // Items list
+  const el = document.getElementById('wishlistItems');
+  if (!wishlist.length) { el.innerHTML = '<div class="wishlist-empty">No items saved yet.<br/>Browse and click ♡ to save.</div>'; }
+  else {
+    el.innerHTML = wishlist.map(i => {
+      const qty = wishlistQtys[i.id] || 1;
+      const max = i.avail || 1;
+      return `<div class="wishlist-item"><div class="wishlist-item-img">${i.image ? `<img src="${i.image}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"/>` : '✨'}</div><div style="flex:1"><div class="wishlist-item-name">${i.name}</div><div class="wishlist-item-price">$${i.price}/day</div><div style="display:flex;align-items:center;gap:6px;margin-top:6px"><button onclick="setWishlistQty('${i.id}',${qty - 1})" style="width:24px;height:24px;border:1px solid var(--grey-light);background:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;border-radius:4px">−</button><input id="wlqty-${i.id}" type="number" min="1" max="${max}" value="${qty}" onchange="setWishlistQty('${i.id}',this.value)" style="width:40px;text-align:center;border:1px solid var(--grey-light);border-radius:4px;padding:2px 4px;font-size:13px"/><button onclick="setWishlistQty('${i.id}',${qty + 1})" style="width:24px;height:24px;border:1px solid var(--grey-light);background:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;border-radius:4px">+</button><span style="font-size:11px;color:var(--grey)">of ${max}</span></div></div><button class="wishlist-item-remove" onclick="toggleWishlist('${i.id}')">✕</button></div>`;
+    }).join('');
+  }
   document.getElementById('wishlistSuccess').classList.remove('show');
 }
-function toggleWishlistSidebar(){document.getElementById('wishlistSidebar').classList.toggle('open')}
-function submitWishlist(){
-  if(!document.getElementById('wl-name').value||!document.getElementById('wl-email').value){alert('Please enter your name and email.');return}
-  document.getElementById('wishlistSuccess').classList.add('show');
-  const btn=document.getElementById('wlSubmitBtn');btn.textContent='Sent! ✓';btn.style.background='var(--primary-dark)';
-}
-function renderFaq(){
-  document.getElementById('faqContainer').innerHTML=FAQS.map((f,i)=>`<div class="faq-item" id="faq-${i}"><button class="faq-question" onclick="toggleFaq(${i})"><span class="faq-q-text">${f.q}</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">${f.a}</div></div></div>`).join('');
-}
-function toggleFaq(i){
-  const item=document.getElementById('faq-'+i);var was=item.classList.contains('open');
-  var all=document.querySelectorAll('.faq-item');
-  for(var j=0;j<all.length;j++) all[j].classList.remove('open');
-  if(!was) item.classList.add('open');
-}
-async async async function submitCustom(){
-  var first=document.getElementById('cb-first').value.trim();
-  var email=document.getElementById('cb-email').value.trim();
-  if(!first||!email){alert('Please fill in your name and email.');return}
-  var btn=document.querySelector('[onclick="submitCustom()"]');
-  btn.textContent='Sending…';btn.disabled=true;
-  try{
-    await fetch('https://mgwvpkezvuswvbkzwysx.supabase.co/functions/v1/submit-custom',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs'},
-      body:JSON.stringify({first_name:first,last_name:document.getElementById('cb-last').value.trim(),email:email,phone:document.getElementById('cb-phone').value.trim(),event_type:document.getElementById('cb-type').value.trim(),event_date:document.getElementById('cb-date').value,venue:document.getElementById('cb-venue').value.trim(),message:document.getElementById('cb-message').value.trim()})
+function toggleWishlistSidebar() { document.getElementById('wishlistSidebar').classList.toggle('open'); }
+
+async function submitWishlist() {
+  if (!document.getElementById('wl-name').value || !document.getElementById('wl-email').value) { alert('Please enter your name and email.'); return; }
+  const btn = document.getElementById('wlSubmitBtn');
+  btn.textContent = 'Sending…'; btn.disabled = true;
+  const items = wishlist.map(i => ({ id: i.id, name: i.name, qty: wishlistQtys[i.id] || 1, price: i.price }));
+  try {
+    await fetch('https://mgwvpkezvuswvbkzwysx.supabase.co/functions/v1/submit-quote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+      body: JSON.stringify({
+        client_name: document.getElementById('wl-name').value,
+        client_email: document.getElementById('wl-email').value,
+        client_phone: document.getElementById('wl-phone') ? document.getElementById('wl-phone').value : '',
+        event_date: document.getElementById('wl-date') ? document.getElementById('wl-date').value : '',
+        notes: document.getElementById('wl-notes') ? document.getElementById('wl-notes').value : '',
+        items,
+      })
     });
-    document.getElementById('customSuccess').classList.add('show');
-  }catch(e){alert('Something went wrong. Please try again or email us directly.');}
-  btn.textContent='Send Inquiry →';btn.disabled=false;
+    document.getElementById('wishlistSuccess').classList.add('show');
+    btn.textContent = 'Sent! ✓'; btn.style.background = 'var(--primary-dark)';
+  } catch(e) {
+    alert('Something went wrong. Please try again or email us directly.');
+    btn.textContent = 'Send Inquiry →'; btn.disabled = false;
+  }
 }
+
+// ── Custom Build Form ─────────────────────────────────────────────────────────
+async function submitCustom() {
+  var first = document.getElementById('cb-first').value.trim();
+  var email = document.getElementById('cb-email').value.trim();
+  if (!first || !email) { alert('Please fill in your name and email.'); return; }
   var btn = document.querySelector('[onclick="submitCustom()"]');
   btn.textContent = 'Sending…'; btn.disabled = true;
   try {
     await fetch('https://mgwvpkezvuswvbkzwysx.supabase.co/functions/v1/submit-custom', {
       method: 'POST',
-      headers: {'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs'},
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
       body: JSON.stringify({
         first_name: first,
         last_name: document.getElementById('cb-last').value.trim(),
@@ -1624,113 +1662,69 @@ async async async function submitCustom(){
   }
   btn.textContent = 'Send Inquiry →'; btn.disabled = false;
 }
-```
 
-Then save and push:
-```
-cd ~/Downloads/wallflower-relic
-git add index.html
-git commit -m "Wire custom build form to submit-custom edge function"
-git push
-async function submitCustom(){
-  var first=document.getElementById('cb-first').value.trim();
-  var email=document.getElementById('cb-email').value.trim();
-  if(!first||!email){alert('Please fill in your name and email.');return}
-  var btn=document.querySelector('[onclick="submitCustom()"]');
-  btn.textContent='Sending…';btn.disabled=true;
-  try{
-    await fetch('https://mgwvpkezvuswvbkzwysx.supabase.co/functions/v1/submit-custom',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs'},
-      body:JSON.stringify({first_name:first,last_name:document.getElementById('cb-last').value.trim(),email:email,phone:document.getElementById('cb-phone').value.trim(),event_type:document.getElementById('cb-type').value.trim(),event_date:document.getElementById('cb-date').value,venue:document.getElementById('cb-venue').value.trim(),message:document.getElementById('cb-message').value.trim()})
-    });
-    document.getElementById('customSuccess').classList.add('show');
-  }catch(e){alert('Something went wrong. Please try again or email us directly.');}
-  btn.textContent='Send Inquiry →';btn.disabled=false;
+// ── Contact Form ──────────────────────────────────────────────────────────────
+function submitContact() {
+  if (!document.getElementById('cf-first').value || !document.getElementById('cf-email').value) { alert('Please fill in required fields.'); return; }
+  document.getElementById('contactSuccess').classList.add('show');
 }
-  var btn = document.querySelector('[onclick="submitCustom()"]');
-  btn.textContent = 'Sending…'; btn.disabled = true;
-  try {
-    var res = await fetch('https://mgwvpkezvuswvbkzwysx.supabase.co/functions/v1/submit-custom', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs'},
-      body: JSON.stringify({
-        first_name: first,
-        last_name: document.getElementById('cb-last').value.trim(),
-        email: email,
-        phone: document.getElementById('cb-phone').value.trim(),
-        event_type: document.getElementById('cb-type').value.trim(),
-        event_date: document.getElementById('cb-date').value,
-        venue: document.getElementById('cb-venue').value.trim(),
-        message: document.getElementById('cb-message').value.trim(),
-      })
-    });
-    document.getElementById('customSuccess').classList.add('show');
-  } catch(e) {
-    alert('Something went wrong. Please try again or email us directly.');
-  }
-  btn.textContent = 'Send Inquiry →'; btn.disabled = false;
+
+// ── Nav / Page ────────────────────────────────────────────────────────────────
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-left a').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById('page-' + p); if (target) target.classList.add('active');
+  const navEl = document.getElementById('nav-' + p); if (navEl) navEl.classList.add('active');
+  window.scrollTo(0, 0);
+  if (p === 'inventory') renderInventory();
+  if (p === 'faq') renderFaq();
 }
-var eduCurrent=0;var eduTotal=7;
-function eduGoTo(n){
-  document.querySelectorAll('.edu-slide').forEach(function(s,i){s.style.display=i===n?'block':'none'});
-  eduCurrent=n;
-  document.getElementById('edu-counter').textContent=(n+1)+' / '+eduTotal;
-  var dots=document.getElementById('edu-dots');
-  dots.innerHTML='';
-  for(var i=0;i<eduTotal;i++){
-    var d=document.createElement('div');
-    d.style.cssText='width:'+(i===n?'20px':'8px')+';height:8px;border-radius:4px;background:'+(i===n?'rgba(154,170,85,0.9)':'rgba(255,255,255,0.2)')+';transition:all 0.3s;cursor:pointer';
-    d.onclick=(function(idx){return function(){eduGoTo(idx)}})(i);
+function navSearch(val) {
+  val = val.trim().toLowerCase();
+  if (!val) { currentSearchQuery = null; } else { currentSearchQuery = val; showPage('inventory'); }
+  renderInventory();
+}
+
+// ── FAQ ───────────────────────────────────────────────────────────────────────
+const FAQS = [
+  { q: "How does the rental process work?", a: "Browse our inventory and save items to your wishlist. When you're ready, send us an inquiry with your event date and we'll confirm availability, finalize quantities, and send a custom quote within 24 hours." },
+  { q: "Do you deliver and set up?", a: "Yes — delivery, placement, and pickup are available throughout Kansas City and Nebraska. Our team handles all loading, unloading, and placement so you can focus on your event." },
+  { q: "How far in advance should I reserve items?", a: "We recommend reserving 3–6 months in advance for weddings and large events, and 4–6 weeks for smaller gatherings. Popular pieces book quickly during peak season (May–October)." },
+  { q: "Can I see the pieces in person before booking?", a: "Absolutely. We welcome visits to our warehouse by appointment. Contact us to schedule a walkthrough." },
+  { q: "What if something gets damaged?", a: "We include a small damage waiver with every rental that covers normal wear and accidental minor damage. Significant damage beyond normal use is charged at repair or replacement cost." },
+  { q: "Can you accommodate custom requests?", a: "Yes. We offer custom fabrication for neon signs, floral installations, and specialty backdrops through our network of local artisans." },
+  { q: "What's your cancellation policy?", a: "Cancellations more than 60 days out receive a full deposit refund. 30–60 days forfeit 50%. Within 30 days, deposits are non-refundable." },
+  { q: "Do you serve outside Kansas City and Nebraska?", a: "Our primary service area is Kansas City metro and Nebraska. Contact us for events in surrounding states — we can often accommodate travel for larger orders." },
+];
+function renderFaq() {
+  document.getElementById('faqContainer').innerHTML = FAQS.map((f, i) =>
+    `<div class="faq-item" id="faq-${i}"><button class="faq-question" onclick="toggleFaq(${i})"><span class="faq-q-text">${f.q}</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">${f.a}</div></div></div>`
+  ).join('');
+}
+function toggleFaq(i) {
+  const item = document.getElementById('faq-' + i); var was = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+  if (!was) item.classList.add('open');
+}
+
+// ── Education slider ──────────────────────────────────────────────────────────
+var eduCurrent = 0; var eduTotal = 7;
+function eduGoTo(n) {
+  document.querySelectorAll('.edu-slide').forEach(function(s, i) { s.style.display = i === n ? 'block' : 'none'; });
+  eduCurrent = n;
+  document.getElementById('edu-counter').textContent = (n + 1) + ' / ' + eduTotal;
+  var dots = document.getElementById('edu-dots'); dots.innerHTML = '';
+  for (var i = 0; i < eduTotal; i++) {
+    var d = document.createElement('div');
+    d.style.cssText = 'width:' + (i === n ? '20px' : '8px') + ';height:8px;border-radius:4px;background:' + (i === n ? 'rgba(154,170,85,0.9)' : 'rgba(255,255,255,0.2)') + ';transition:all 0.3s;cursor:pointer';
+    d.onclick = (function(idx) { return function() { eduGoTo(idx); }; })(i);
     dots.appendChild(d);
   }
 }
-function eduNext(){eduGoTo((eduCurrent+1)%eduTotal)}
-function eduPrev(){eduGoTo((eduCurrent-1+eduTotal)%eduTotal)}
-function navSearch(val){
-  val=val.trim().toLowerCase();
-  if(!val){currentSearchQuery=null;}else{currentSearchQuery=val;showPage('inventory');}
-  renderInventory();
-}
-function submitContact(){
-  if(!document.getElementById('cf-first').value||!document.getElementById('cf-email').value){alert('Please fill in required fields.');return}
-  document.getElementById('contactSuccess').classList.add('show');
-}
-function toggleWishlistSidebar(){document.getElementById('wishlistSidebar').classList.toggle('open')}
-function submitWishlist(){
-  if(!document.getElementById('wl-name').value||!document.getElementById('wl-email').value){alert('Please enter your name and email.');return}
-  document.getElementById('wishlistSuccess').classList.add('show');
-  var btn=document.getElementById('wlSubmitBtn');btn.textContent='Sent! ✓';btn.style.background='var(--primary-dark)';
-}
-function toggleWishlist(id){
-  var item=INVENTORY.find(function(i){return i.id===id});if(!item)return;
-  var idx=wishlist.findIndex(function(w){return w.id===id});
-  if(idx>-1)wishlist.splice(idx,1);else wishlist.push(item);
-  updateWishlistUI();
-  var heart=document.getElementById('heart-'+id);
-  if(heart){var saved=wishlist.some(function(w){return w.id===id});heart.className='item-card-heart '+(saved?'saved':'');heart.textContent=saved?'♥':'♡'}
-}
-function updateWishlistUI(){
-  var count=wishlist.length;
-  var badge=document.getElementById('navWishlistBadge');
-  if(badge){badge.textContent=count;badge.className='nav-wishlist-badge '+(count>0?'show':'')}
-  var icon=document.getElementById('navHeartIcon');
-  if(icon)icon.textContent=count>0?'♥':'♡';
-  var el=document.getElementById('wishlistItems');
-  if(!wishlist.length){el.innerHTML='<div class="wishlist-empty">No items saved yet.<br/>Browse and click ♡ to save.</div>'}
-  else{el.innerHTML=wishlist.map(function(i){return'<div class="wishlist-item"><div class="wishlist-item-img">'+i.emoji+'</div><div><div class="wishlist-item-name">'+i.name+'</div><div class="wishlist-item-price">$'+i.price+'/day</div></div><button class="wishlist-item-remove" onclick="toggleWishlist('+i.id+')">✕</button></div>'}).join('')}
-  document.getElementById('wishlistSuccess').classList.remove('show');
-}
-function renderFaq(){
-  document.getElementById('faqContainer').innerHTML=FAQS.map(function(f,i){return'<div class="faq-item" id="faq-'+i+'"><button class="faq-question" onclick="toggleFaq('+i+')"><span class="faq-q-text">'+f.q+'</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">'+f.a+'</div></div></div>'}).join('');
-}
-function toggleFaq(i){
-  var item=document.getElementById('faq-'+i);var was=item.classList.contains('open');
-  var all=document.querySelectorAll('.faq-item');
-  for(var j=0;j<all.length;j++) all[j].classList.remove('open');
-  if(!was) item.classList.add('open');
-}
-renderFaq();eduGoTo(0);loadInventory();
+function eduNext() { eduGoTo((eduCurrent + 1) % eduTotal); }
+function eduPrev() { eduGoTo((eduCurrent - 1 + eduTotal) % eduTotal); }
+
+renderFaq(); eduGoTo(0); loadInventory();
 </script>
 </body>
 </html>
