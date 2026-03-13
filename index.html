@@ -247,7 +247,7 @@
     .inv-page-btn.active{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.5);color:#fff}
 
     .inv-body{padding:52px 48px}
-    .inv-collection-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:36px;padding-bottom:16px;border-bottom:1px solid var(--grey-light)}
+    .inv-collection-header{padding:32px 0 16px}
     .inv-collection-title{font-family:var(--serif);font-size:42px;font-weight:400;color:var(--brown)}
     .inv-collection-title em{font-style:normal;color:var(--primary);font-family:'Raleway',sans-serif;font-weight:700;text-transform:uppercase}
     .inv-count{font-size:11px;letter-spacing:2px;color:var(--grey);font-weight:500}
@@ -1482,7 +1482,7 @@ function renderInventory() {
     titleEl.innerHTML = `Search: <em>${currentSearchQuery}</em>`;
     if (subEl) { subEl.innerHTML = ''; subEl.style.display = 'none'; subEl.style.margin = '0'; subEl.style.padding = '0'; }
     document.getElementById('itemCount').textContent = `${filtered.length} piece${filtered.length !== 1 ? 's' : ''}`;
-    grid.innerHTML = filtered.length ? filtered.map(renderCard).join('') : `<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items found.</div>`;
+    grid.innerHTML = filtered.length ? filtered.map(renderCard).join('') : `<div style="grid-column:1/-1;padding:24px 0 8px;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items found.</div>`;
     return;
   }
 
@@ -1491,7 +1491,7 @@ function renderInventory() {
     titleEl.innerHTML = 'All <em>Pieces</em>';
     if (subEl) { subEl.innerHTML = ''; subEl.style.display = 'none'; subEl.style.margin = '0'; subEl.style.padding = '0'; }
     document.getElementById('itemCount').textContent = `${items.length} piece${items.length !== 1 ? 's' : ''}`;
-    grid.innerHTML = items.length ? items.map(renderCard).join('') : `<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items available.</div>`;
+    grid.innerHTML = items.length ? items.map(renderCard).join('') : `<div style="grid-column:1/-1;padding:24px 0 8px;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items available.</div>`;
     return;
   }
 
@@ -1523,7 +1523,7 @@ function renderInventory() {
   }
 
   document.getElementById('itemCount').textContent = `${items.length} piece${items.length !== 1 ? 's' : ''}`;
-  grid.innerHTML = items.length ? items.map(renderCard).join('') : `<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items in this collection yet.</div>`;
+  grid.innerHTML = items.length ? items.map(renderCard).join('') : `<div style="grid-column:1/-1;padding:24px 0 8px;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items in this collection yet.</div>`;
 }
 
 function setSubFilter(t) { currentSubFilter = currentSubFilter === t ? null : t; renderInventory(); }
