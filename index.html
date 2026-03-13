@@ -1697,6 +1697,7 @@ const FAQS = [
   { q: "Do you serve outside Kansas City and Nebraska?", a: "Our primary service area is Kansas City metro and Nebraska. Contact us for events in surrounding states — we can often accommodate travel for larger orders." },
 ];
 function renderFaq() {
+  if (!document.getElementById("faqContainer")) return;
   document.getElementById('faqContainer').innerHTML = FAQS.map((f, i) =>
     `<div class="faq-item" id="faq-${i}"><button class="faq-question" onclick="toggleFaq(${i})"><span class="faq-q-text">${f.q}</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">${f.a}</div></div></div>`
   ).join('');
