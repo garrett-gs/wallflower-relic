@@ -309,157 +309,29 @@
     .item-overlay-close{position:fixed;top:24px;right:24px;z-index:201;width:44px;height:44px;background:var(--cream);border:none;cursor:pointer;font-size:18px;color:var(--brown);display:none;align-items:center;justify-content:center}
     .item-overlay.open ~ .item-overlay-close{display:flex}
 
-
-    /* ── WISHLIST FLOAT CARD ── */
-    .wl-float{
-      position:fixed;bottom:28px;right:28px;z-index:150;
-      display:flex;flex-direction:column;align-items:flex-end;gap:0;
+    /* Wishlist sidebar */
+    .wishlist-sidebar{
+      position:fixed;right:0;top:var(--header-total);bottom:0;width:380px;
+      background:var(--cream);z-index:99;
+      box-shadow:-4px 0 24px rgba(30,40,12,0.14);
+      transform:translateX(100%);transition:transform 0.33s ease;
+      display:flex;flex-direction:column;
+      border-left:1px solid var(--grey-light);
     }
-
-    /* The collapsed FAB */
-    .wl-fab{
-      width:56px;height:56px;border-radius:50%;
-      background:var(--primary);border:none;cursor:pointer;
-      display:flex;align-items:center;justify-content:center;
-      box-shadow:0 4px 20px rgba(30,40,12,0.32);
-      font-size:22px;color:#fff;position:relative;
-      transition:background 0.2s,transform 0.15s;
-      flex-shrink:0;
-    }
-    .wl-fab:hover{background:var(--primary-dark);transform:scale(1.06)}
-    .wl-fab-badge{
-      position:absolute;top:-4px;right:-4px;
-      background:var(--brown);color:#fff;
-      width:20px;height:20px;border-radius:50%;
-      font-size:10px;font-weight:700;font-family:var(--sans);
-      display:none;align-items:center;justify-content:center;
-      border:2px solid var(--cream);
-    }
-    .wl-fab-badge.show{display:flex}
-
-    /* The expanded panel */
-    .wl-panel{
-      width:320px;
-      background:var(--cream);
-      border:1px solid var(--grey-light);
-      box-shadow:0 8px 40px rgba(30,40,12,0.22);
-      display:none;flex-direction:column;
-      max-height:540px;
-      margin-bottom:12px;
-      overflow:hidden;
-    }
-    .wl-panel.open{display:flex}
-
-    .wl-panel-head{
-      background:var(--primary);
-      padding:14px 16px;
-      display:flex;align-items:center;justify-content:space-between;
-      flex-shrink:0;
-    }
-    .wl-panel-title{
-      font-family:var(--serif);font-size:16px;font-weight:400;color:#fff;
-    }
-    .wl-panel-title span{
-      font-family:var(--sans);font-size:11px;font-weight:500;
-      color:rgba(255,255,255,0.55);margin-left:8px;
-    }
-    .wl-panel-close{
-      background:none;border:none;color:rgba(255,255,255,0.5);
-      font-size:18px;cursor:pointer;padding:0 2px;line-height:1;
-      transition:color 0.15s;
-    }
-    .wl-panel-close:hover{color:#fff}
-
-    .wl-panel-items{
-      flex:1;overflow-y:auto;
-      padding:8px 0;
-      min-height:0;
-    }
-    .wl-panel-empty{
-      padding:32px 16px;text-align:center;
-      font-family:var(--serif);font-size:15px;font-style:italic;
-      color:var(--grey);line-height:1.5;
-    }
-    .wl-item{
-      display:flex;align-items:center;gap:10px;
-      padding:8px 14px;
-      border-bottom:1px solid var(--grey-light);
-      transition:background 0.15s;
-    }
-    .wl-item:last-child{border-bottom:none}
-    .wl-item:hover{background:var(--primary-pale)}
-    .wl-item-thumb{
-      width:44px;height:44px;flex-shrink:0;
-      background:var(--primary-pale);
-      display:flex;align-items:center;justify-content:center;
-      font-size:18px;overflow:hidden;
-    }
-    .wl-item-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-    .wl-item-info{flex:1;min-width:0}
-    .wl-item-name{
-      font-family:var(--serif);font-size:13px;color:var(--brown);
-      line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    }
-    .wl-item-cat{font-size:10px;color:var(--grey);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-    .wl-item-remove{
-      background:none;border:none;color:var(--grey-light);
-      cursor:pointer;font-size:14px;padding:4px;flex-shrink:0;
-      transition:color 0.15s;line-height:1;
-    }
-    .wl-item-remove:hover{color:#c0392b}
-    .wl-qty{
-      display:flex;align-items:center;gap:4px;flex-shrink:0;
-    }
-    .wl-qty-btn{
-      background:var(--primary-pale);border:1px solid var(--grey-light);
-      color:var(--primary);width:22px;height:22px;border-radius:3px;
-      font-size:14px;line-height:1;cursor:pointer;display:flex;
-      align-items:center;justify-content:center;padding:0;
-      transition:background 0.15s;
-    }
-    .wl-qty-btn:hover{background:var(--primary);color:#fff}
-    .wl-qty-num{
-      font-family:var(--sans);font-size:12px;font-weight:600;
-      color:var(--dark);width:38px;text-align:center;
-      border:1px solid var(--grey-light);border-radius:3px;
-      padding:2px 4px;background:var(--white);
-      -moz-appearance:textfield;
-    }
-    .wl-qty-num::-webkit-outer-spin-button,
-    .wl-qty-num::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-    .wl-qty-num:focus{outline:none;border-color:var(--primary);}
-
-    /* Submit section inside the card */
-    .wl-panel-form{
-      border-top:1px solid var(--grey-light);
-      padding:12px 14px 14px;
-      background:var(--white);
-      flex-shrink:0;
-    }
-    .wl-panel-form .form-input{
-      padding:8px 10px;font-size:12px;margin-bottom:6px;
-    }
-    .wl-submit-btn{
-      width:100%;padding:10px;
-      background:var(--primary);color:#fff;border:none;
-      font-family:var(--sans);font-size:10px;font-weight:600;
-      letter-spacing:2px;text-transform:uppercase;cursor:pointer;
-      transition:background 0.2s;margin-top:4px;
-    }
-    .wl-submit-btn:hover{background:var(--primary-dark)}
-    .wl-submit-btn:disabled{opacity:0.6;cursor:not-allowed}
-    .wl-success{
-      background:rgba(107,107,58,0.1);border:1px solid var(--primary);
-      border-left:3px solid var(--primary);
-      padding:10px 12px;font-size:12px;color:var(--primary);
-      margin-top:8px;display:none;
-    }
-    .wl-success.show{display:block}
-
-    /* hide old sidebar */
-    .wishlist-sidebar{display:none!important}
-    .wishlist-fab{display:none!important}
-
+    .wishlist-sidebar.open{transform:translateX(0)}
+    .wishlist-header{padding:24px 28px 18px;border-bottom:1px solid var(--grey-light);display:flex;align-items:center;justify-content:space-between;background:var(--primary)}
+    .wishlist-title{font-family:var(--serif);font-size:24px;font-weight:400;color:#fff}
+    .wishlist-close{background:none;border:none;font-size:20px;cursor:pointer;color:rgba(255,255,255,0.55)}
+    .wishlist-close:hover{color:#fff}
+    .wishlist-items{flex:1;overflow-y:auto;padding:16px 28px}
+    .wishlist-item{display:flex;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--grey-light)}
+    .wishlist-item-img{width:56px;height:56px;background:var(--primary-pale);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+    .wishlist-item-name{font-family:var(--serif);font-size:16px;color:var(--brown);line-height:1.2}
+    .wishlist-item-price{font-size:12px;color:var(--grey);margin-top:3px}
+    .wishlist-item-remove{background:none;border:none;color:var(--grey-light);cursor:pointer;font-size:16px;margin-left:auto;flex-shrink:0;transition:color 0.15s}
+    .wishlist-item-remove:hover{color:#c0392b}
+    .wishlist-footer{padding:18px 28px 24px;border-top:1px solid var(--grey-light)}
+    .wishlist-empty{padding:48px 0;text-align:center;font-family:var(--serif);font-size:18px;font-style:italic;color:var(--grey)}
 
     /* Forms */
     .inquiry-form{display:flex;flex-direction:column;gap:12px}
@@ -602,11 +474,11 @@
         <a class="btn-primary" href="#" onclick="showPage('inventory');return false;" style="margin-bottom:6px">View All →</a>
       </div>
       <div class="featured-grid">
-        <div class="featured-card" onclick="openItem(0)"><div class="featured-card-bg">🪵</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Tables</div><div class="featured-card-name">Vineyard Farm Table</div></div></div>
-        <div class="featured-card" onclick="openItem(8)"><div class="featured-card-bg">✨</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Décor</div><div class="featured-card-name">Neon Sign — Custom</div></div></div>
-        <div class="featured-card" onclick="openItem(7)"><div class="featured-card-bg">🥂</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Bars &amp; Catering</div><div class="featured-card-name">Champagne Wall</div></div></div>
-        <div class="featured-card" onclick="openItem(4)"><div class="featured-card-bg">💡</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Lighting</div><div class="featured-card-name">Edison String Lights</div></div></div>
-        <div class="featured-card" onclick="openItem(3)"><div class="featured-card-bg">⛺</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Tents</div><div class="featured-card-name">40×60 Frame Tent</div></div></div>
+        <div class="featured-card" onclick="openItem(0)"><div class="featured-card-bg">🪵</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Tables</div><div class="featured-card-name">Vineyard Farm Table</div><div class="featured-card-price">From $85/day</div></div></div>
+        <div class="featured-card" onclick="openItem(8)"><div class="featured-card-bg">✨</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Décor</div><div class="featured-card-name">Neon Sign — Custom</div><div class="featured-card-price">From $180/day</div></div></div>
+        <div class="featured-card" onclick="openItem(7)"><div class="featured-card-bg">🥂</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Bars &amp; Catering</div><div class="featured-card-name">Champagne Wall</div><div class="featured-card-price">From $250/day</div></div></div>
+        <div class="featured-card" onclick="openItem(4)"><div class="featured-card-bg">💡</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Lighting</div><div class="featured-card-name">Edison String Lights</div><div class="featured-card-price">From $35/day</div></div></div>
+        <div class="featured-card" onclick="openItem(3)"><div class="featured-card-bg">⛺</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Tents</div><div class="featured-card-name">40×60 Frame Tent</div><div class="featured-card-price">From $1,800/day</div></div></div>
       </div>
     </div>
   </div>
@@ -1509,40 +1381,25 @@
 </div>
 <button class="item-overlay-close" onclick="closeItem()">✕</button>
 
-<!-- WISHLIST FLOAT CARD -->
-<div class="wl-float" id="wlFloat">
-  <!-- Expanded panel -->
-  <div class="wl-panel" id="wlPanel">
-    <div class="wl-panel-head">
-      <div class="wl-panel-title">Your Wishlist <span id="wlCountLabel"></span></div>
-      <button class="wl-panel-close" onclick="toggleWishlistSidebar()">✕</button>
-    </div>
-    <div class="wl-panel-items" id="wishlistItems">
-      <div class="wl-panel-empty">No items saved yet.<br/>Click ♡ on any piece.</div>
-    </div>
-    <div class="wl-panel-form" id="wlForm">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:0">
-        <input class="form-input" id="wl-name" placeholder="Your name *" />
-        <input class="form-input" type="email" id="wl-email" placeholder="Email *" />
-      </div>
-      <input class="form-input" type="date" id="wl-date" style="margin-top:6px;width:100%" />
-      <textarea class="form-input form-textarea" id="wl-notes" placeholder="Notes or quantities…" style="min-height:48px;margin-top:6px;font-size:12px"></textarea>
-      <button class="wl-submit-btn" id="wlSubmitBtn" onclick="submitWishlist()">Send Inquiry →</button>
-      <div class="wl-success" id="wishlistSuccess">✓ Sent! We'll be in touch soon.</div>
+<!-- WISHLIST SIDEBAR -->
+<div class="wishlist-sidebar" id="wishlistSidebar">
+  <div class="wishlist-header"><div class="wishlist-title">Your Wishlist</div><button class="wishlist-close" onclick="toggleWishlistSidebar()">✕</button></div>
+  <div class="wishlist-items" id="wishlistItems"></div>
+  <div class="wishlist-footer">
+    <div class="inquiry-form">
+      <div class="form-row"><div class="form-group"><label class="form-label">Name *</label><input class="form-input" id="wl-name" placeholder="Your Name"/></div><div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="wl-email" type="email" placeholder="you@email.com"/></div></div>
+      <div class="form-group"><label class="form-label">Event Date</label><input class="form-input" id="wl-date" type="date"/></div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-input form-textarea" id="wl-notes" placeholder="Customization, quantities, special details…" style="min-height:64px"></textarea></div>
+      <button class="btn-wishlist add" id="wlSubmitBtn" onclick="submitWishlist()">Send Inquiry →</button>
+      <div class="success-msg" id="wishlistSuccess">Inquiry sent! We'll be in touch soon.</div>
     </div>
   </div>
-  <!-- FAB -->
-  <button class="wl-fab" id="wlFab" onclick="toggleWishlistSidebar()" title="My Wishlist">
-    <span id="navHeartIcon">♡</span>
-    <span class="wl-fab-badge" id="navWishlistBadge">0</span>
-  </button>
 </div>
-
+<button class="wishlist-fab" onclick="toggleWishlistSidebar()">♡</button>
 
 <script>
-const SUPABASE_URL  = "https://mgwvpkezvuswvbkzwysx.supabase.co";
-const SUPABASE_KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs";
-const FUNCTION_URL  = SUPABASE_URL + "/functions/v1/submit-quote";
+const SUPABASE_URL = "https://mgwvpkezvuswvbkzwysx.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs";
 
 let INVENTORY = [];
 
@@ -1568,10 +1425,6 @@ async function loadInventory() {
       emoji: getCategoryEmoji(item.category)
     }));
     buildCatalogFromInventory();
-    console.log('Inventory loaded:', INVENTORY.length, 'items');
-    console.log('Sample item:', INVENTORY[0]);
-    console.log('CATALOG_PAGES:', CATALOG_PAGES.map(p=>p.label));
-    console.log('currentPageId:', currentPageId);
     renderInventory();
     updateWishlistUI();
   } catch(e) {
@@ -1594,114 +1447,24 @@ function getCategoryEmoji(cat) {
   if(c.includes('av') || c.includes('tech') || c.includes('audio')) return '🎤';
   return '✨';
 }
-// Tag-based category + heading map from WR spreadsheet
-const CATEGORY_MAP = {
-  "Accents": [
-    { heading: "Styling Accents", tags: ["styling"] }
-  ],
-  "Backdrops": [
-    { heading: "Architectural Collection", tags: ["architecture"] },
-    { heading: "Display Collection", tags: ["display"] },
-    { heading: "Editorial Collection", tags: ["edit"] },
-    { heading: "Minimal Collection", tags: ["minimal"] },
-    { heading: "Interactive Collection", tags: ["interactive"] },
-    { heading: "Flower", tags: ["flowerwall"] }
-  ],
-  "Bars & Beverage": [
-    { heading: "Bars", tags: ["bars"] },
-    { heading: "Barbacks", tags: ["barback"] },
-    { heading: "Shelving & Tiered Displays", tags: ["beverage"] }
-  ],
-  "Carts": [
-    { heading: "Carts", tags: ["carts"] },
-    { heading: "Umbrellas", tags: ["umbrella"] }
-  ],
-  "Centerpieces": [
-    { heading: "Bud Vases", tags: ["bud"] },
-    { heading: "Candle Holders", tags: ["candle holder"] },
-    { heading: "Vessels", tags: ["vessels"] },
-    { heading: "Votives", tags: ["votive"] }
-  ],
-  "Ceremony": [
-    { heading: "Arches", tags: ["arch"] },
-    { heading: "Columns", tags: ["columns"] },
-    { heading: "Crosses", tags: ["crosses"] },
-    { heading: "Floral Arches", tags: ["floralarch"] },
-    { heading: "Platforms & Risers", tags: ["platform"] }
-  ],
-  "Facades": [
-    { heading: "Facades", tags: ["facade"] }
-  ],
-  "Furniture & Lounge": [
-    { heading: "Sofa", tags: ["sofa"] },
-    { heading: "Chairs", tags: ["seating"] },
-    { heading: "Tables", tags: ["tables"] },
-    { heading: "Soft Goods", tags: ["soft goods"] }
-  ],
-  "Lighting": [
-    { heading: "Wall Lighting", tags: ["wall"] },
-    { heading: "Lamps", tags: ["lamp"] }
-  ],
-  "Signage": [
-    { heading: "Mirrors", tags: ["mirrors"] },
-    { heading: "Welcome Signs", tags: ["welcome"] }
-  ],
-  "Tablescapes": [
-    { heading: "Chargers", tags: ["charger"] },
-    { heading: "Glassware", tags: ["glassware"] },
-    { heading: "Tea Sets", tags: ["tea"] }
-  ]
-};
-
-// All tags that belong to any category
-const ALL_VALID_TAGS = Object.values(CATEGORY_MAP).flatMap(function(h){ return h.flatMap(function(s){ return s.tags; }); });
-
+// CATALOG_PAGES built dynamically from Supabase categories after inventory loads
 let CATALOG_PAGES=[{id:"all", label:"All Pieces", cats:null}];
 
-async function loadCategories(){
-  try{
-    const res=await fetch(SUPABASE_URL+'/rest/v1/settings?select=categories&limit=1',{
-      headers:{
-        'apikey':SUPABASE_KEY,
-        'Authorization':'Bearer '+SUPABASE_KEY,
-        'Content-Type':'application/json'
-      }
-    });
-    const data=await res.json();
-    const cats=data[0] && data[0].categories;
-    if(!Array.isArray(cats)||!cats.length) throw new Error('no categories');
-    CATALOG_PAGES=[
-      {id:"all", label:"All Pieces", cats:null},
-      ...cats.sort(function(a,b){return a.name.localeCompare(b.name)}).map(function(c){return{
-        id: c.name.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
-        label: c.name,
-        cats: [c.name]
-      }})
-    ];
-  }catch(e){
-    // Fallback: derive from loaded inventory
-    const cats=[...new Set(INVENTORY.map(function(i){return i.cat}).filter(Boolean))].sort();
-    CATALOG_PAGES=[
-      {id:"all", label:"All Pieces", cats:null},
-      ...cats.map(function(c){return{
-        id: c.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
-        label: c, cats:[c]
-      }})
-    ];
-  }
-  buildCatBar();
-  // Re-render inventory now that categories are ready
-  if(INVENTORY.length) renderInventory();
-}
-function buildCatBar(){
+function buildCatalogFromInventory(){
+  const cats=[...new Set(INVENTORY.map(i=>i.cat).filter(Boolean))].sort();
+  CATALOG_PAGES=[
+    {id:"all", label:"All Pieces", cats:null},
+    ...cats.map(c=>({
+      id: c.toLowerCase().replace(/[^a-z0-9]+/g,'-'),
+      label: c,
+      cats: [c]
+    }))
+  ];
   const bar=document.getElementById('catBar');
-  bar.innerHTML=CATALOG_PAGES.map(function(p){
-    return'<a class="cat-bar-item '+(p.id==='all'?'active':'')+'" href="#" onclick="showInventoryPage(\''+p.id+'\');return false;" id="cat-'+p.id+'">'+p.label+'</a>';
-  }).join('');
+  bar.innerHTML=CATALOG_PAGES.map(p=>
+    `<a class="cat-bar-item ${p.id==='all'?'active':''}" href="#" onclick="showInventoryPage('${p.id}');return false;" id="cat-${p.id}">${p.label}</a>`
+  ).join('');
 }
-
-// Keep this for compatibility — called after inventory loads
-function buildCatalogFromInventory(){ buildCatBar(); }
 const FAQS=[
   {q:"How does the rental process work?",a:"Browse our inventory and save items to your wishlist. When you're ready, send us an inquiry with your event date and we'll confirm availability, finalize quantities, and send a custom quote within 24 hours."},
   {q:"Do you deliver and set up?",a:"Yes — delivery, placement, and pickup are available throughout Kansas City and Nebraska. Our team handles all loading, unloading, and placement so you can focus on your event."},
@@ -1733,102 +1496,40 @@ function setCatBarActive(p){
   document.querySelectorAll('.cat-bar-item').forEach(el=>el.classList.remove('active'));
   const el=document.getElementById('cat-'+p);if(el)el.classList.add('active');
 }
-function itemCard(item){
-  const saved=wishlist.some(w=>w.id===item.id);
-  const imgContent=item.image
-    ? `<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain;position:absolute;inset:0;background:var(--cream)" onerror="this.style.display='none'"/>${item.emoji}`
-    : `${item.emoji}`;
-  const priceStr = item.price > 0 ? `$${item.price.toLocaleString('en-US', {minimumFractionDigits:0})}` : '';
-  return `<div class="item-card" onclick="openItem(${item.id})">
-    <div class="item-card-img" style="position:relative">
-      ${imgContent}
-      <button class="item-card-heart ${saved?'saved':''}" onclick="event.stopPropagation();toggleWishlist(${item.id})" id="heart-${item.id}">${saved?'♥':'♡'}</button>
-    </div>
-    <div class="item-card-body">
-      <div class="item-card-name">${item.name}</div>
-      <div class="item-card-footer">
-        <div class="item-card-price">${priceStr}</div>
-        <div class="item-avail ${item.avail>0?'yes':'no'}">${item.avail>0?'Available':'Sold Out'}</div>
-      </div>
-    </div>
-  </div>`;
-}
-
 function getPageItems(p){
-  if(p==='all'){
-    return INVENTORY.filter(function(i){
-      return i.tags.some(function(t){ return ALL_VALID_TAGS.includes(t); });
-    });
-  }
-  const catName = CATALOG_PAGES.find(function(x){ return x.id===p; });
-  if(!catName) return [];
-  const headings = CATEGORY_MAP[catName.label];
-  if(!headings) return [];
-  const allTags = headings.flatMap(function(h){ return h.tags; });
-  return INVENTORY.filter(function(i){
-    return i.tags.some(function(t){ return allTags.includes(t); });
-  });
+  const pg=CATALOG_PAGES.find(x=>x.id===p);
+  if(!pg||!pg.cats)return INVENTORY;
+  return INVENTORY.filter(i=>pg.cats.includes(i.cat));
 }
-
 function renderInventory(){
-  const page=CATALOG_PAGES.find(function(p){ return p.id===currentPageId; });
-  if(!page) return;
+  const items=getPageItems(currentPageId);
+  const page=CATALOG_PAGES.find(p=>p.id===currentPageId);
   const titleEl=document.getElementById('collectionTitle');
   const parts=page.label.split(' ');
   titleEl.innerHTML=parts.length>1?`${parts[0]} <em>${parts.slice(1).join(' ')}</em>`:`<em>${page.label}</em>`;
-  document.getElementById('subCollections').innerHTML='';
+  const subEl=document.getElementById('subCollections');
+  subEl.innerHTML='';
+  const filtered=currentSearchQuery
+    ? INVENTORY.filter(i=>i.name.toLowerCase().includes(currentSearchQuery)||i.cat.toLowerCase().includes(currentSearchQuery)||i.tags.some(t=>t.includes(currentSearchQuery)))
+    : (currentSubFilter?items.filter(i=>i.tags.includes(currentSubFilter)):items);
+  document.getElementById('itemCount').textContent=`${filtered.length} piece${filtered.length!==1?'s':''}`;
   const grid=document.getElementById('itemGrid');
-
-  // Search mode — flat list across all valid items
-  if(currentSearchQuery){
-    const filtered=INVENTORY.filter(function(i){
-      return i.name.toLowerCase().includes(currentSearchQuery)
-        || i.tags.some(function(t){ return t.includes(currentSearchQuery); });
-    });
-    document.getElementById('itemCount').textContent=`${filtered.length} piece${filtered.length!==1?'s':''}`;
-    grid.innerHTML = filtered.length
-      ? filtered.map(itemCard).join('')
-      : `<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items found.</div>`;
-    return;
-  }
-
-  // Category page with headings
-  if(currentPageId !== 'all' && CATEGORY_MAP[page.label]){
-    const headings = CATEGORY_MAP[page.label];
-    let totalCount = 0;
-    let html = '';
-    headings.forEach(function(h){
-      const items = INVENTORY.filter(function(i){
-        return i.tags.some(function(t){ return h.tags.includes(t); });
-      });
-      if(!items.length) return;
-      totalCount += items.length;
-      html += `<div style="grid-column:1/-1;padding:40px 0 16px;font-family:var(--serif);font-size:28px;letter-spacing:0.08em;text-transform:uppercase;color:var(--dark);border-top:1px solid var(--line);margin-top:8px">${h.heading}</div>`;
-      html += items.map(itemCard).join('');
-    });
-    document.getElementById('itemCount').textContent=`${totalCount} piece${totalCount!==1?'s':''}`;
-    grid.innerHTML = totalCount
-      ? html
-      : `<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items in this collection yet.</div>`;
-    return;
-  }
-
-  // All Pieces — show everything with a valid tag
-  const items = getPageItems('all');
-  document.getElementById('itemCount').textContent=`${items.length} piece${items.length!==1?'s':''}`;
-  grid.innerHTML = items.length
-    ? items.map(itemCard).join('')
-    : `<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items in this collection yet.</div>`;
+  if(!filtered.length){grid.innerHTML=`<div style="grid-column:1/-1;padding:80px 0;text-align:center;color:var(--grey);font-family:var(--serif);font-size:22px;font-style:italic">No items in this collection yet.</div>`;return}
+  grid.innerHTML=filtered.map(item=>{
+    const saved=wishlist.some(w=>w.id===item.id);
+    const imgContent=item.image?`<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.style.display='none'"/>${item.emoji}`:`${item.emoji}`;
+return`<div class="item-card" onclick="openItem(${item.id})"><div class="item-card-img" style="position:relative">${imgContent}<button class="item-card-heart ${saved?'saved':''}" onclick="event.stopPropagation();toggleWishlist(${item.id})" id="heart-${item.id}">${saved?'♥':'♡'}</button></div><div class="item-card-body"><div class="item-card-cat">${item.cat}</div><div class="item-card-name">${item.name}</div><div class="item-card-desc">${item.desc}</div><div class="item-card-footer"><div class="item-card-price">$${item.price}<span>/day</span></div><div class="item-avail ${item.avail>0?'yes':'no'}">${item.avail>0?'Available':'Sold Out'}</div></div></div></div>`;
+  }).join('');
 }
 function switchPage(p){currentPageId=p;currentSubFilter=null;setCatBarActive(p);renderInventory()}
 function setSubFilter(t){currentSubFilter=t;renderInventory()}
 
 function openItem(id){
   const item=INVENTORY.find(i=>i.id===id);if(!item)return;currentItemId=id;
-  const di=document.getElementById('detailImg');if(item.image){di.innerHTML=`<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:contain" onerror="this.outerHTML='${item.emoji}'"/>`;di.style.fontSize='0';}else{di.textContent=item.emoji;di.style.fontSize='';};
+  const di=document.getElementById('detailImg');if(item.image){di.innerHTML=`<img src="${item.image}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover" onerror="this.outerHTML='${item.emoji}'"/>`;di.style.fontSize='0';}else{di.textContent=item.emoji;di.style.fontSize='';};
   document.getElementById('detailCat').textContent=item.cat;
   document.getElementById('detailName').textContent=item.name;
-  document.getElementById('detailPrice').innerHTML='';
+  document.getElementById('detailPrice').innerHTML=`$${item.price}<span>/day</span>`;
   document.getElementById('detailDesc').textContent=item.desc;
   const specs=[];
   if(item.dims)specs.push(['Dimensions',item.dims]);
@@ -1851,210 +1552,126 @@ function handleOverlayClick(e){if(e.target===document.getElementById('itemOverla
 function toggleDetailWishlist(){if(currentItemId===null)return;toggleWishlist(currentItemId);updateDetailBtn(currentItemId)}
 
 function toggleWishlist(id){
-  var item=INVENTORY.find(function(i){return i.id===id});if(!item)return;
-  var idx=wishlist.findIndex(function(w){return w.id===id});
-  var wasEmpty=wishlist.length===0;
+  const item=INVENTORY.find(i=>i.id===id);if(!item)return;
+  const idx=wishlist.findIndex(w=>w.id===id);
   if(idx>-1)wishlist.splice(idx,1);else wishlist.push(item);
   updateWishlistUI();
-  // Auto-open the panel when first item is added
-  if(wasEmpty&&wishlist.length===1){
-    var panel=document.getElementById('wlPanel');
-    if(panel&&!panel.classList.contains('open'))panel.classList.add('open');
-  }
-  var heart=document.getElementById('heart-'+id);
-  if(heart){var saved=wishlist.some(function(w){return w.id===id});heart.className='item-card-heart '+(saved?'saved':'');heart.textContent=saved?'♥':'♡';}
+  const heart=document.getElementById('heart-'+id);
+  if(heart){const saved=wishlist.some(w=>w.id===id);heart.className=`item-card-heart ${saved?'saved':''}`;heart.textContent=saved?'♥':'♡'}
 }
-
-// ─── SLIDESHOW ───────────────────────────────────────────────────────────────
+function updateWishlistUI(){
+  const count=wishlist.length;
+  const badge=document.getElementById('navWishlistBadge');
+  if(badge){badge.textContent=count;badge.className=`nav-wishlist-badge ${count>0?'show':''}`}
+  const icon=document.getElementById('navHeartIcon');
+  if(icon)icon.textContent=count>0?'♥':'♡';
+  const el=document.getElementById('wishlistItems');
+  if(!wishlist.length){el.innerHTML='<div class="wishlist-empty">No items saved yet.<br/>Browse and click ♡ to save.</div>'}
+  else{el.innerHTML=wishlist.map(i=>`<div class="wishlist-item"><div class="wishlist-item-img">${i.emoji}</div><div><div class="wishlist-item-name">${i.name}</div><div class="wishlist-item-price">$${i.price}/day</div></div><button class="wishlist-item-remove" onclick="toggleWishlist(${i.id})">✕</button></div>`).join('')}
+  document.getElementById('wishlistSuccess').classList.remove('show');
+}
+function toggleWishlistSidebar(){document.getElementById('wishlistSidebar').classList.toggle('open')}
+function submitWishlist(){
+  if(!document.getElementById('wl-name').value||!document.getElementById('wl-email').value){alert('Please enter your name and email.');return}
+  document.getElementById('wishlistSuccess').classList.add('show');
+  const btn=document.getElementById('wlSubmitBtn');btn.textContent='Sent! ✓';btn.style.background='var(--primary-dark)';
+}
+function renderFaq(){
+  document.getElementById('faqContainer').innerHTML=FAQS.map((f,i)=>`<div class="faq-item" id="faq-${i}"><button class="faq-question" onclick="toggleFaq(${i})"><span class="faq-q-text">${f.q}</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">${f.a}</div></div></div>`).join('');
+}
+function toggleFaq(i){
+  const item=document.getElementById('faq-'+i);var was=item.classList.contains('open');
+  var all=document.querySelectorAll('.faq-item');
+  for(var j=0;j<all.length;j++) all[j].classList.remove('open');
+  if(!was) item.classList.add('open');
+}
+async function submitCustom(){
+  var first = document.getElementById('cb-first').value.trim();
+  var email = document.getElementById('cb-email').value.trim();
+  if(!first || !email){alert('Please fill in your name and email.');return}
+  var btn = document.querySelector('[onclick="submitCustom()"]');
+  btn.textContent = 'Sending…'; btn.disabled = true;
+  try {
+    var res = await fetch('https://mgwvpkezvuswvbkzwysx.supabase.co/functions/v1/submit-custom', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs'},
+      body: JSON.stringify({
+        first_name: first,
+        last_name: document.getElementById('cb-last').value.trim(),
+        email: email,
+        phone: document.getElementById('cb-phone').value.trim(),
+        event_type: document.getElementById('cb-type').value.trim(),
+        event_date: document.getElementById('cb-date').value,
+        venue: document.getElementById('cb-venue').value.trim(),
+        message: document.getElementById('cb-message').value.trim(),
+      })
+    });
+    document.getElementById('customSuccess').classList.add('show');
+  } catch(e) {
+    alert('Something went wrong. Please try again or email us directly.');
+  }
+  btn.textContent = 'Send Inquiry →'; btn.disabled = false;
+}
 var eduCurrent=0;var eduTotal=7;
 function eduGoTo(n){
   document.querySelectorAll('.edu-slide').forEach(function(s,i){s.style.display=i===n?'block':'none'});
   eduCurrent=n;
   document.getElementById('edu-counter').textContent=(n+1)+' / '+eduTotal;
-  var dots=document.getElementById('edu-dots');dots.innerHTML='';
+  var dots=document.getElementById('edu-dots');
+  dots.innerHTML='';
   for(var i=0;i<eduTotal;i++){
     var d=document.createElement('div');
     d.style.cssText='width:'+(i===n?'20px':'8px')+';height:8px;border-radius:4px;background:'+(i===n?'rgba(154,170,85,0.9)':'rgba(255,255,255,0.2)')+';transition:all 0.3s;cursor:pointer';
-    d.onclick=(function(idx){return function(){eduGoTo(idx)}})(i);dots.appendChild(d);
+    d.onclick=(function(idx){return function(){eduGoTo(idx)}})(i);
+    dots.appendChild(d);
   }
 }
 function eduNext(){eduGoTo((eduCurrent+1)%eduTotal)}
 function eduPrev(){eduGoTo((eduCurrent-1+eduTotal)%eduTotal)}
-
-// ─── SEARCH ──────────────────────────────────────────────────────────────────
 function navSearch(val){
   val=val.trim().toLowerCase();
   if(!val){currentSearchQuery=null;}else{currentSearchQuery=val;showPage('inventory');}
   renderInventory();
 }
-
-// ─── WISHLIST FLOAT CARD UI ───────────────────────────────────────────────────
-function toggleWishlistSidebar(){
-  var panel=document.getElementById('wlPanel');
-  panel.classList.toggle('open');
+function submitContact(){
+  if(!document.getElementById('cf-first').value||!document.getElementById('cf-email').value){alert('Please fill in required fields.');return}
+  document.getElementById('contactSuccess').classList.add('show');
 }
-
-function changeQty(id, delta){
-  var item = wishlist.find(function(i){ return i.id===id; });
-  if(!item) return;
-  var invItem = INVENTORY.find(function(i){ return i.id===id; });
-  var maxQty = (invItem && invItem.avail > 0) ? invItem.avail : 999;
-  var newQty = Math.max(1, (item.qty||1) + delta);
-  if(newQty > maxQty){
-    newQty = maxQty;
-    item.qty = newQty;
-    var el = document.getElementById('qty-'+id);
-    if(el){ el.value = newQty; el.style.color='#c0392b'; setTimeout(function(){ el.style.color=''; }, 1200); }
-    return;
-  }
-  item.qty = newQty;
-  var el = document.getElementById('qty-'+id);
-  if(el){ el.value = item.qty; el.style.color=''; }
+function toggleWishlistSidebar(){document.getElementById('wishlistSidebar').classList.toggle('open')}
+function submitWishlist(){
+  if(!document.getElementById('wl-name').value||!document.getElementById('wl-email').value){alert('Please enter your name and email.');return}
+  document.getElementById('wishlistSuccess').classList.add('show');
+  var btn=document.getElementById('wlSubmitBtn');btn.textContent='Sent! ✓';btn.style.background='var(--primary-dark)';
 }
-function setQty(id, val){
-  var item = wishlist.find(function(i){ return i.id===id; });
-  if(!item) return;
-  var n = parseInt(val);
-  if(!isNaN(n) && n >= 1) item.qty = n;
-}
-function validateQty(id, inputEl){
-  var item = wishlist.find(function(i){ return i.id===id; });
-  if(!item) return;
-  var invItem = INVENTORY.find(function(i){ return i.id===id; });
-  var maxQty = (invItem && invItem.avail > 0) ? invItem.avail : 999;
-  var n = parseInt(inputEl.value);
-  if(isNaN(n) || n < 1) n = 1;
-  if(n > maxQty){ n = maxQty; inputEl.style.color='#c0392b'; setTimeout(function(){ inputEl.style.color=''; }, 1200); }
-  item.qty = n;
-  inputEl.value = n;
+function toggleWishlist(id){
+  var item=INVENTORY.find(function(i){return i.id===id});if(!item)return;
+  var idx=wishlist.findIndex(function(w){return w.id===id});
+  if(idx>-1)wishlist.splice(idx,1);else wishlist.push(item);
+  updateWishlistUI();
+  var heart=document.getElementById('heart-'+id);
+  if(heart){var saved=wishlist.some(function(w){return w.id===id});heart.className='item-card-heart '+(saved?'saved':'');heart.textContent=saved?'♥':'♡'}
 }
 function updateWishlistUI(){
   var count=wishlist.length;
   var badge=document.getElementById('navWishlistBadge');
-  if(badge){badge.textContent=count;badge.className='wl-fab-badge '+(count>0?'show':'');}
+  if(badge){badge.textContent=count;badge.className='nav-wishlist-badge '+(count>0?'show':'')}
   var icon=document.getElementById('navHeartIcon');
   if(icon)icon.textContent=count>0?'♥':'♡';
-  var label=document.getElementById('wlCountLabel');
-  if(label)label.textContent=count>0?'('+count+')':'';
   var el=document.getElementById('wishlistItems');
-  var formEl=document.getElementById('wlForm');
-  if(!wishlist.length){
-    el.innerHTML='<div class="wl-panel-empty">No items saved yet.<br/>Click ♡ on any piece.</div>';
-    if(formEl)formEl.style.display='none';
-  } else {
-    if(formEl)formEl.style.display='block';
-    el.innerHTML=wishlist.map(function(i){
-      var imgHtml=i.image
-        ? '<div class="wl-item-thumb"><img src="'+i.image+'" alt="'+i.name+'" onerror="this.parentNode.innerHTML=\''+i.emoji+'\'"></div>'
-        : '<div class="wl-item-thumb">'+i.emoji+'</div>';
-      return '<div class="wl-item">'+imgHtml+'<div class="wl-item-info"><div class="wl-item-name">'+i.name+'</div><div class="wl-item-cat">'+i.cat+'</div></div><div class="wl-qty"><button class="wl-qty-btn" onclick="changeQty('+i.id+',-1)">−</button><input class="wl-qty-num" id="qty-'+i.id+'" type="number" min="1" value="'+i.qty+'" oninput="setQty('+i.id+',this.value)" onblur="validateQty('+i.id+',this)"/><button class="wl-qty-btn" onclick="changeQty('+i.id+',1)">+</button></div><button class="wl-item-remove" onclick="toggleWishlist('+i.id+')" title="Remove">✕</button></div>';
-    }).join('');
-  }
-  var successEl=document.getElementById('wishlistSuccess');
-  if(successEl)successEl.classList.remove('show');
+  if(!wishlist.length){el.innerHTML='<div class="wishlist-empty">No items saved yet.<br/>Browse and click ♡ to save.</div>'}
+  else{el.innerHTML=wishlist.map(function(i){return'<div class="wishlist-item"><div class="wishlist-item-img">'+i.emoji+'</div><div><div class="wishlist-item-name">'+i.name+'</div><div class="wishlist-item-price">$'+i.price+'/day</div></div><button class="wishlist-item-remove" onclick="toggleWishlist('+i.id+')">✕</button></div>'}).join('')}
+  document.getElementById('wishlistSuccess').classList.remove('show');
 }
-
-// ─── SUBMIT WISHLIST → SUPABASE LEAD ────────────────────────────────────────
-async function submitWishlist(){
-  var name=document.getElementById('wl-name').value.trim();
-  var email=document.getElementById('wl-email').value.trim();
-  if(!name||!email){alert('Please enter your name and email.');return}
-  if(!wishlist.length){alert('Please add at least one item to your wishlist.');return}
-  var btn=document.getElementById('wlSubmitBtn');
-  btn.disabled=true;btn.textContent='Sending…';
-  var payload={
-    client_name:name,
-    client_email:email,
-    event_date:document.getElementById('wl-date').value||null,
-    notes:document.getElementById('wl-notes').value.trim(),
-    items:wishlist.map(function(i){return{name:i.name,qty:i.qty||1,price:0,image_url:i.image||'',inventory_id:i.dbId};})
-  };
-  try{
-    var res=await fetch(FUNCTION_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
-      body:JSON.stringify(payload)
-    });
-    var data=await res.json();
-    if(data.success){
-      document.getElementById('wishlistSuccess').classList.add('show');
-      btn.textContent='Sent! ✓';btn.style.background='var(--primary-dark)';
-      wishlist=[];updateWishlistUI();
-    } else {
-      throw new Error(data.error||'Submission failed');
-    }
-  }catch(err){
-    alert('Something went wrong: '+err.message);
-    btn.disabled=false;btn.textContent='Send Inquiry →';
-  }
-}
-
-// ─── SUBMIT CONTACT FORM ─────────────────────────────────────────────────────
-async function submitContact(){
-  var first=document.getElementById('cf-first').value.trim();
-  var email=document.getElementById('cf-email').value.trim();
-  if(!first||!email){alert('Please fill in required fields.');return}
-  var btn=document.querySelector('#page-contact .submit-btn');
-  if(btn){btn.disabled=true;btn.textContent='Sending…';}
-  var payload={
-    client_name:first+' '+(document.getElementById('cf-last').value.trim()||''),
-    client_email:email,
-    event_type:document.getElementById('cf-type').value.trim(),
-    event_date:document.getElementById('cf-date').value||null,
-    venue:document.getElementById('cf-venue').value.trim(),
-    notes:document.getElementById('cf-message').value.trim(),
-    items:[]
-  };
-  try{
-    var res=await fetch(FUNCTION_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},
-      body:JSON.stringify(payload)
-    });
-    var data=await res.json();
-    document.getElementById('contactSuccess').classList.add('show');
-    if(btn){btn.textContent='Sent! ✓';btn.style.background='var(--primary-dark)';}
-  }catch(err){
-    // Silently show success even on network error — don't block UX
-    document.getElementById('contactSuccess').classList.add('show');
-    if(btn){btn.textContent='Sent! ✓';}
-  }
-}
-
-// ─── SUBMIT CUSTOM BUILD FORM ────────────────────────────────────────────────
-async function submitCustom(){
-  if(!document.getElementById('cb-first').value||!document.getElementById('cb-email').value){alert('Please fill in required fields.');return}
-  var payload={
-    client_name:document.getElementById('cb-first').value.trim()+' '+(document.getElementById('cb-last').value.trim()||''),
-    client_email:document.getElementById('cb-email').value.trim(),
-    event_type:document.getElementById('cb-type').value.trim()||'Custom Build',
-    event_date:document.getElementById('cb-date').value||null,
-    venue:document.getElementById('cb-venue').value.trim(),
-    notes:'[CUSTOM BUILD] '+document.getElementById('cb-message').value.trim(),
-    items:[]
-  };
-  try{
-    await fetch(FUNCTION_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY},body:JSON.stringify(payload)});
-  }catch(e){}
-  document.getElementById('customSuccess').classList.add('show');
-}
-
-// ─── FAQ ─────────────────────────────────────────────────────────────────────
 function renderFaq(){
-  var el=document.getElementById('faqContainer');if(!el)return;
-  el.innerHTML=FAQS.map(function(f,i){return'<div class="faq-item" id="faq-'+i+'"><button class="faq-question" onclick="toggleFaq('+i+')"><span class="faq-q-text">'+f.q+'</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">'+f.a+'</div></div></div>'}).join('');
+  document.getElementById('faqContainer').innerHTML=FAQS.map(function(f,i){return'<div class="faq-item" id="faq-'+i+'"><button class="faq-question" onclick="toggleFaq('+i+')"><span class="faq-q-text">'+f.q+'</span><span class="faq-icon">+</span></button><div class="faq-answer"><div class="faq-answer-inner">'+f.a+'</div></div></div>'}).join('');
 }
-function toggleFaq(id){
-  var item=document.getElementById('faq-'+id);if(!item)return;
-  var was=item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(function(el){el.classList.remove('open')});
-  if(!was)item.classList.add('open');
+function toggleFaq(i){
+  var item=document.getElementById('faq-'+i);var was=item.classList.contains('open');
+  var all=document.querySelectorAll('.faq-item');
+  for(var j=0;j<all.length;j++) all[j].classList.remove('open');
+  if(!was) item.classList.add('open');
 }
-
-// ─── INIT ────────────────────────────────────────────────────────────────────
-renderFaq();eduGoTo(0);loadCategories();loadInventory();
-// Hide submit form until items are added
-(function(){var f=document.getElementById('wlForm');if(f)f.style.display='none';})();
+renderFaq();eduGoTo(0);loadInventory();
 </script>
 </body>
 </html>
