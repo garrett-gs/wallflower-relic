@@ -1724,7 +1724,7 @@ function eduGoTo(n) {
 function eduNext() { eduGoTo((eduCurrent + 1) % eduTotal); }
 function eduPrev() { eduGoTo((eduCurrent - 1 + eduTotal) % eduTotal); }
 
-renderFaq(); eduGoTo(0); loadInventory();
+document.addEventListener("DOMContentLoaded", function() { renderFaq(); eduGoTo(0); loadInventory(); });
 </script>
 </body>
 </html>
