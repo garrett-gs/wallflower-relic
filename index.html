@@ -1585,10 +1585,69 @@ function toggleFaq(i){
   for(var j=0;j<all.length;j++) all[j].classList.remove('open');
   if(!was) item.classList.add('open');
 }
+async async async function submitCustom(){
+  var first=document.getElementById('cb-first').value.trim();
+  var email=document.getElementById('cb-email').value.trim();
+  if(!first||!email){alert('Please fill in your name and email.');return}
+  var btn=document.querySelector('[onclick="submitCustom()"]');
+  btn.textContent='Sending…';btn.disabled=true;
+  try{
+    await fetch('https://mgwvpkezvuswvbkzwysx.supabase.co/functions/v1/submit-custom',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs'},
+      body:JSON.stringify({first_name:first,last_name:document.getElementById('cb-last').value.trim(),email:email,phone:document.getElementById('cb-phone').value.trim(),event_type:document.getElementById('cb-type').value.trim(),event_date:document.getElementById('cb-date').value,venue:document.getElementById('cb-venue').value.trim(),message:document.getElementById('cb-message').value.trim()})
+    });
+    document.getElementById('customSuccess').classList.add('show');
+  }catch(e){alert('Something went wrong. Please try again or email us directly.');}
+  btn.textContent='Send Inquiry →';btn.disabled=false;
+}
+  var btn = document.querySelector('[onclick="submitCustom()"]');
+  btn.textContent = 'Sending…'; btn.disabled = true;
+  try {
+    await fetch('https://mgwvpkezvuswvbkzwysx.supabase.co/functions/v1/submit-custom', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs'},
+      body: JSON.stringify({
+        first_name: first,
+        last_name: document.getElementById('cb-last').value.trim(),
+        email: email,
+        phone: document.getElementById('cb-phone').value.trim(),
+        event_type: document.getElementById('cb-type').value.trim(),
+        event_date: document.getElementById('cb-date').value,
+        venue: document.getElementById('cb-venue').value.trim(),
+        message: document.getElementById('cb-message').value.trim(),
+      })
+    });
+    document.getElementById('customSuccess').classList.add('show');
+  } catch(e) {
+    alert('Something went wrong. Please try again or email us directly.');
+  }
+  btn.textContent = 'Send Inquiry →'; btn.disabled = false;
+}
+```
+
+Then save and push:
+```
+cd ~/Downloads/wallflower-relic
+git add index.html
+git commit -m "Wire custom build form to submit-custom edge function"
+git push
 async function submitCustom(){
-  var first = document.getElementById('cb-first').value.trim();
-  var email = document.getElementById('cb-email').value.trim();
-  if(!first || !email){alert('Please fill in your name and email.');return}
+  var first=document.getElementById('cb-first').value.trim();
+  var email=document.getElementById('cb-email').value.trim();
+  if(!first||!email){alert('Please fill in your name and email.');return}
+  var btn=document.querySelector('[onclick="submitCustom()"]');
+  btn.textContent='Sending…';btn.disabled=true;
+  try{
+    await fetch('https://mgwvpkezvuswvbkzwysx.supabase.co/functions/v1/submit-custom',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs'},
+      body:JSON.stringify({first_name:first,last_name:document.getElementById('cb-last').value.trim(),email:email,phone:document.getElementById('cb-phone').value.trim(),event_type:document.getElementById('cb-type').value.trim(),event_date:document.getElementById('cb-date').value,venue:document.getElementById('cb-venue').value.trim(),message:document.getElementById('cb-message').value.trim()})
+    });
+    document.getElementById('customSuccess').classList.add('show');
+  }catch(e){alert('Something went wrong. Please try again or email us directly.');}
+  btn.textContent='Send Inquiry →';btn.disabled=false;
+}
   var btn = document.querySelector('[onclick="submitCustom()"]');
   btn.textContent = 'Sending…'; btn.disabled = true;
   try {
