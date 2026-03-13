@@ -1503,12 +1503,8 @@ function renderInventory() {
   const parts = catName.split(' ');
   titleEl.innerHTML = parts.length > 1 ? `${parts[0]} <em>${parts.slice(1).join(' ')}</em>` : `<em>${catName}</em>`;
 
-  // Sub-filter buttons
-  if (subEl) {
-    subEl.innerHTML = catDef.headings.map(h =>
-      `<button class="sub-filter-btn ${currentSubFilter === h.tags[0] ? 'active' : ''}" onclick="setSubFilter('${h.tags[0]}')">${h.label}</button>`
-    ).join('');
-  }
+  // No sub-filter buttons
+  if (subEl) subEl.innerHTML = '';
 
   // Get items — either filtered by sub-heading tag or all tags in this category
   const allCatTags = catDef.headings.flatMap(h => h.tags);
