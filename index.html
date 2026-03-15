@@ -473,12 +473,8 @@
         <div><div class="section-label">Hand-Selected</div><div class="section-title">Featured <em>Pieces</em></div></div>
         <a class="btn-primary" href="#" onclick="showPage('inventory');return false;" style="margin-bottom:6px">View All →</a>
       </div>
-      <div class="featured-grid">
-        <div class="featured-card" onclick="openItem(0)"><div class="featured-card-bg">🪵</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Tables</div><div class="featured-card-name">Vineyard Farm Table</div><div class="featured-card-price">From $85/day</div></div></div>
-        <div class="featured-card" onclick="openItem(8)"><div class="featured-card-bg">✨</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Décor</div><div class="featured-card-name">Neon Sign — Custom</div><div class="featured-card-price">From $180/day</div></div></div>
-        <div class="featured-card" onclick="openItem(7)"><div class="featured-card-bg">🥂</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Bars &amp; Catering</div><div class="featured-card-name">Champagne Wall</div><div class="featured-card-price">From $250/day</div></div></div>
-        <div class="featured-card" onclick="openItem(4)"><div class="featured-card-bg">💡</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Lighting</div><div class="featured-card-name">Edison String Lights</div><div class="featured-card-price">From $35/day</div></div></div>
-        <div class="featured-card" onclick="openItem(3)"><div class="featured-card-bg">⛺</div><div class="featured-card-overlay"></div><div class="featured-card-info"><div class="featured-card-cat">Tents</div><div class="featured-card-name">40×60 Frame Tent</div><div class="featured-card-price">From $1,800/day</div></div></div>
+      <div class="featured-grid" id="featured-grid">
+        <!-- populated dynamically from Supabase featured items -->
       </div>
     </div>
   </div>
@@ -1448,6 +1444,47 @@ async function loadInventory() {
   }
 }
 
+// ── Load Featured ─────────────────────────────────────────────────────────────
+async function loadFeatured() {
+  const grid = document.getElementById('featured-grid');
+  if (!grid) return;
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/inventory?select=id,name,category,price,image_url&featured=eq.true&on_website=eq.true&order=name.asc&limit=5', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const data = await res.json();
+    if (!data || data.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1;padding:48px 0;text-align:center;color:rgba(255,255,255,0.3);font-family:var(--serif);font-size:20px;font-style:italic">No featured items selected yet.</div>';
+      return;
+    }
+    // find index in INVENTORY array for openItem() — fall back to 0
+    grid.innerHTML = data.map((item, i) => {
+      const invIdx = INVENTORY.findIndex(inv => inv.id === item.id);
+      const onclick = invIdx >= 0 ? `openItem(${invIdx})` : `showPage('inventory')`;
+      const bg = item.image_url
+        ? `<img src="${item.image_url}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease" class="featured-img" />`
+        : `<div class="featured-card-bg" style="font-size:80px;display:flex;align-items:center;justify-content:center;height:100%;background:var(--primary)">◫</div>`;
+      const price = item.price ? `From $${Number(item.price).toFixed(0)}/day` : '';
+      return `<div class="featured-card${i === 0 ? ' featured-card-first' : ''}" onclick="${onclick}">
+        <div class="featured-card-bg" style="padding:0;overflow:hidden">${bg}</div>
+        <div class="featured-card-overlay"></div>
+        <div class="featured-card-info">
+          <div class="featured-card-cat">${item.category || ''}</div>
+          <div class="featured-card-name">${item.name}</div>
+          ${price ? `<div class="featured-card-price">${price}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+    // hover effect for image cards
+    grid.querySelectorAll('.featured-img').forEach(img => {
+      img.closest('.featured-card').addEventListener('mouseenter', () => img.style.transform = 'scale(1.05)');
+      img.closest('.featured-card').addEventListener('mouseleave', () => img.style.transform = 'scale(1)');
+    });
+  } catch(e) {
+    console.error('Failed to load featured items:', e);
+  }
+}
+
 // ── Category Bar ──────────────────────────────────────────────────────────────
 function buildCategoryBar() {
   const bar = document.getElementById('catBar');
@@ -1721,7 +1758,7 @@ function eduGoTo(n) {
 function eduNext() { eduGoTo((eduCurrent + 1) % eduTotal); }
 function eduPrev() { eduGoTo((eduCurrent - 1 + eduTotal) % eduTotal); }
 
-document.addEventListener("DOMContentLoaded", function() { renderFaq(); eduGoTo(0); loadInventory(); });
+document.addEventListener("DOMContentLoaded", function() { renderFaq(); eduGoTo(0); loadInventory().then(() => loadFeatured()); });
 </script>
 </body>
 </html>
