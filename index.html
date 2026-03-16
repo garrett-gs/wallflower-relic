@@ -1765,8 +1765,11 @@ function renderFaq() {
   ).join('');
 }
 function toggleFaq(i) {
-  const item = document.getElementById('faq-' + i); var was = item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+  var id = String(i).startsWith('faq-') ? i : 'faq-' + i;
+  var item = document.getElementById(id);
+  if (!item) return;
+  var was = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(el) { el.classList.remove('open'); });
   if (!was) item.classList.add('open');
 }
 
