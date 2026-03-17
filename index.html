@@ -14,13 +14,18 @@
       document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : '';
     }
     function mobileNav(page) {
-      toggleMobileMenu();
+      var btn = document.getElementById('mobileMenuBtn');
+      var drawer = document.getElementById('mobileNavDrawer');
+      if (btn) btn.classList.remove('open');
+      if (drawer) drawer.classList.remove('open');
+      document.body.style.overflow = '';
       setTimeout(function() {
         if (typeof showPage === 'function') {
           showPage(page);
           if (page === 'inventory' && typeof renderInventory === 'function') renderInventory();
         }
-      }, 300);
+        window.scrollTo(0, 0);
+      }, 350);
     }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
