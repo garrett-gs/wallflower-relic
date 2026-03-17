@@ -4,6 +4,25 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WALLFLOWER RELIC — Event Rentals</title>
+  <script>
+    function toggleMobileMenu() {
+      var btn = document.getElementById('mobileMenuBtn');
+      var drawer = document.getElementById('mobileNavDrawer');
+      if (!btn || !drawer) return;
+      btn.classList.toggle('open');
+      drawer.classList.toggle('open');
+      document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : '';
+    }
+    function mobileNav(page) {
+      toggleMobileMenu();
+      setTimeout(function() {
+        if (typeof showPage === 'function') {
+          showPage(page);
+          if (page === 'inventory' && typeof renderInventory === 'function') renderInventory();
+        }
+      }, 300);
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Raleway:wght@700&display=swap" rel="stylesheet"/>
   <style>
@@ -1880,22 +1899,6 @@ function updateWishlistUI() {
   document.getElementById('wishlistSuccess').classList.remove('show');
 }
 function toggleWishlistSidebar() { document.getElementById('wishlistSidebar').classList.toggle('open'); }
-
-function toggleMobileMenu() {
-  const btn = document.getElementById('mobileMenuBtn')
-  const drawer = document.getElementById('mobileNavDrawer')
-  btn.classList.toggle('open')
-  drawer.classList.toggle('open')
-  document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : ''
-}
-
-function mobileNav(page) {
-  toggleMobileMenu()
-  setTimeout(() => {
-    if (page === 'inventory') { showPage('inventory'); renderInventory() }
-    else showPage(page)
-  }, 200)
-}
 
 async function submitWishlist() {
   if (!document.getElementById('wl-name').value || !document.getElementById('wl-email').value) { alert('Please enter your name and email.'); return; }
