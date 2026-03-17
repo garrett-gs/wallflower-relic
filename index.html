@@ -1688,13 +1688,6 @@ let INVENTORY = [];
 let wishlist = [], wishlistQtys = {};
 let currentPageId = "all", currentSubFilter = null, currentItemId = null, currentSearchQuery = null;
 
-// ── Init on load ──────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
-  loadInventory();
-  loadFeatured();
-  renderFaq();
-});
-
 // ── Load Inventory ────────────────────────────────────────────────────────────
 async function loadInventory() {
   try {
@@ -2036,4 +2029,12 @@ function eduGoTo(n) {
   }
 }
 function eduNext() { eduGoTo((eduCurrent + 1) % eduTotal); }
-function eduPrev() { eduGoTo((eduCurrent - 1 + eduTota
+function eduPrev() { eduGoTo((eduCurrent - 1 + eduTotal) % eduTotal); }
+// ── Page init ────────────────────────────────────────────────────────────────
+loadInventory();
+loadFeatured();
+renderFaq();
+buildCategoryBar();
+</script>
+</body>
+</html>
