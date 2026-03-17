@@ -14,18 +14,24 @@
       document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : '';
     }
     function mobileNav(page) {
+      // Switch page immediately
+      document.querySelectorAll('.page').forEach(function(el){ el.classList.remove('active'); });
+      var target = document.getElementById('page-' + page);
+      if (target) target.classList.add('active');
+      // Close drawer
       var btn = document.getElementById('mobileMenuBtn');
       var drawer = document.getElementById('mobileNavDrawer');
       if (btn) btn.classList.remove('open');
-      if (drawer) drawer.classList.remove('open');
+      if (drawer) {
+        drawer.style.zIndex = '-1';
+        drawer.classList.remove('open');
+        setTimeout(function(){ drawer.style.zIndex = ''; }, 400);
+      }
       document.body.style.overflow = '';
-      setTimeout(function() {
-        if (typeof showPage === 'function') {
-          showPage(page);
-          if (page === 'inventory' && typeof renderInventory === 'function') renderInventory();
-        }
-        window.scrollTo(0, 0);
-      }, 350);
+      window.scrollTo(0, 0);
+      // Handle pages that need rendering
+      if (page === 'inventory' && typeof renderInventory === 'function') renderInventory();
+      if (page === 'faq' && typeof renderFaq === 'function') renderFaq();
     }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
