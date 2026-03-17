@@ -437,6 +437,184 @@
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
     @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
     @keyframes scrollPulse{0%,100%{opacity:0.4}50%{opacity:1}}
+
+    /* ── MOBILE HAMBURGER ── */
+    .mobile-menu-btn{
+      display:none;background:none;border:none;cursor:pointer;
+      padding:8px;color:rgba(255,255,255,0.8);flex-direction:column;gap:5px;
+    }
+    .mobile-menu-btn span{display:block;width:22px;height:2px;background:currentColor;transition:all 0.25s;border-radius:1px}
+    .mobile-menu-btn.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+    .mobile-menu-btn.open span:nth-child(2){opacity:0}
+    .mobile-menu-btn.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+    .mobile-nav-drawer{
+      display:none;position:fixed;inset:0;z-index:99;background:var(--primary-dark);
+      padding-top:0;overflow-y:auto;transform:translateX(-100%);transition:transform 0.3s ease;
+    }
+    .mobile-nav-drawer.open{transform:translateX(0)}
+    .mobile-nav-inner{padding:24px 32px 48px}
+    .mobile-nav-logo{display:flex;justify-content:center;padding:28px 0 32px;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:32px}
+    .mobile-nav-link{
+      display:block;font-family:var(--sans);font-size:14px;font-weight:500;
+      letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.6);
+      text-decoration:none;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.06);
+      cursor:pointer;background:none;border-left:none;border-right:none;border-top:none;
+      width:100%;text-align:left;transition:color 0.2s;
+    }
+    .mobile-nav-link:last-child{border-bottom:none}
+    .mobile-nav-link:hover,.mobile-nav-link:active{color:#fff}
+    .mobile-nav-contact{margin-top:40px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.08)}
+    .mobile-nav-contact-label{font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(200,220,130,0.6);margin-bottom:14px}
+    .mobile-nav-contact a{display:block;font-size:15px;color:rgba(255,255,255,0.45);text-decoration:none;margin-bottom:10px}
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      :root{
+        --nav-h: 64px;
+        --cat-h: 42px;
+        --header-total: 106px;
+      }
+
+      /* Nav */
+      nav{
+        height:var(--nav-h);
+        grid-template-columns:auto 1fr auto;
+        padding:0 16px;
+        gap:0;
+      }
+      .nav-left{ display:none }
+      .nav-right{ display:none }
+      .nav-logo img{ height:48px !important }
+      .mobile-menu-btn{ display:flex }
+
+      /* Cat bar */
+      .cat-bar{ padding:0 12px; gap:0 }
+      .cat-bar-item{ padding:0 10px; font-size:9px; letter-spacing:1.5px }
+
+      /* Mobile nav drawer visible */
+      .mobile-nav-drawer{ display:block }
+
+      /* Sections */
+      .section{ padding:56px 20px }
+      .section-sm{ padding:40px 20px }
+      .container{ padding:0 }
+      .divider{ margin:0 20px }
+
+      /* Hero */
+      .hero-title{ font-size:clamp(44px,13vw,72px) }
+      .hero-sub{ font-size:13px;max-width:320px }
+      .hero-actions{ flex-direction:column;align-items:center;gap:10px }
+      .hero-actions a{ width:100%;max-width:280px;text-align:center }
+      .hero-scroll{ display:none }
+      .hero-dots{ bottom:48px }
+      nav .nav-logo{ justify-content:flex-start }
+
+      /* Featured grid */
+      .featured-grid{
+        grid-template-columns:1fr 1fr;
+        grid-template-rows:auto;
+        margin-top:32px;
+      }
+      .featured-card:first-child{ grid-row:auto;grid-column:1/3 }
+
+      /* About strip */
+      .about-strip{
+        grid-template-columns:1fr;
+        gap:32px;
+      }
+      .about-img-placeholder{ aspect-ratio:4/3;max-height:280px }
+      .section-body{ font-size:16px;max-width:100% }
+
+      /* Inventory */
+      .inv-hero{ padding:40px 20px 32px }
+      .inv-body{ padding:32px 20px }
+      .inv-collection-title{ font-size:32px }
+      .item-grid{ grid-template-columns:repeat(2,1fr);gap:1px }
+      .item-card-name{ font-size:16px }
+
+      /* Item detail overlay */
+      .item-detail{
+        grid-template-columns:1fr;
+        max-height:95vh;
+      }
+      .item-detail-img{ min-height:240px;position:relative;top:auto }
+      .item-detail-info{ padding:28px 24px }
+      .item-detail-name{ font-size:26px }
+      .item-overlay{ padding:0;align-items:flex-end }
+      .item-overlay-close{ top:12px;right:12px }
+
+      /* Wishlist sidebar */
+      .wishlist-sidebar{
+        width:100%;
+        top:var(--header-total);
+      }
+      .wishlist-fab{
+        display:flex;position:fixed;bottom:24px;right:20px;z-index:98;
+        width:52px;height:52px;border-radius:50%;
+        background:var(--primary);color:#fff;border:none;cursor:pointer;
+        align-items:center;justify-content:center;font-size:20px;
+        box-shadow:0 4px 20px rgba(61,74,28,0.35);
+      }
+
+      /* Values grid */
+      .values-grid{ grid-template-columns:1fr;gap:1px;margin-top:32px }
+      .value-card{ padding:32px 24px }
+
+      /* Services */
+      .services-hero{ padding:56px 20px 40px }
+      .service-item{
+        grid-template-columns:40px 1fr;
+        padding:32px 20px;
+        gap:20px;
+      }
+      .service-price{ display:none }
+      .service-name{ font-size:22px }
+
+      /* FAQ */
+      .faq-hero{ padding:56px 20px 40px }
+      .faq-list{ padding:40px 20px;max-width:100% }
+      .faq-q-text{ font-size:17px }
+
+      /* Contact */
+      .contact-grid{
+        grid-template-columns:1fr;
+        min-height:auto;
+      }
+      .contact-left{ padding:56px 24px 40px }
+      .contact-right{ padding:40px 24px 56px }
+      .contact-title{ font-size:clamp(34px,8vw,52px) }
+
+      /* Footer */
+      footer{ padding:48px 20px 32px }
+      .footer-grid{
+        grid-template-columns:1fr 1fr;
+        gap:32px 24px;
+        margin-bottom:32px;
+      }
+      .footer-bottom{ flex-direction:column;gap:12px;text-align:center }
+
+      /* Forms */
+      .form-row{ grid-template-columns:1fr }
+
+      /* About page */
+      .about-hero{ padding:64px 20px 48px }
+      .about-hero-body{ font-size:16px }
+
+      /* Sub collections */
+      .sub-collections{ gap:6px }
+      .sub-chip{ font-size:9px;padding:5px 10px }
+
+      /* Page spacing */
+      .page{ padding-top:var(--header-total) }
+    }
+
+    @media (max-width: 400px) {
+      .item-grid{ grid-template-columns:1fr }
+      .featured-grid{ grid-template-columns:1fr }
+      .featured-card:first-child{ grid-column:auto }
+      .footer-grid{ grid-template-columns:1fr }
+    }
   </style>
 </head>
 <body>
@@ -464,11 +642,41 @@
         </div>
       </div>
     </div>
+    <!-- Mobile hamburger -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
   <div class="cat-bar" id="catBar">
     <a class="cat-bar-item active" href="#" onclick="showInventoryPage('all');return false;" id="cat-all">All Pieces</a>
   </div>
 </div>
+
+<!-- MOBILE NAV DRAWER -->
+<div class="mobile-nav-drawer" id="mobileNavDrawer">
+  <div class="mobile-nav-inner">
+    <div class="mobile-nav-logo">
+      <img src="logo_stack.png" alt="Wallflower Relic" style="height:60px;width:auto;opacity:0.85"/>
+    </div>
+    <button class="mobile-nav-link" onclick="mobileNav('home')">Home</button>
+    <button class="mobile-nav-link" onclick="mobileNav('inventory')">Browse Inventory</button>
+    <button class="mobile-nav-link" onclick="mobileNav('about')">About</button>
+    <button class="mobile-nav-link" onclick="mobileNav('services')">Services</button>
+    <button class="mobile-nav-link" onclick="mobileNav('custom')">Custom Builds</button>
+    <button class="mobile-nav-link" onclick="mobileNav('faq')">FAQ</button>
+    <button class="mobile-nav-link" onclick="mobileNav('contact')">Contact</button>
+    <div class="mobile-nav-contact">
+      <div class="mobile-nav-contact-label">Get in touch</div>
+      <a href="tel:4022358179">402.235.8179</a>
+      <a href="mailto:crystal@wallflower-relic.com">crystal@wallflower-relic.com</a>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE WISHLIST FAB -->
+<button class="wishlist-fab" id="wishlistFab" onclick="toggleWishlistSidebar()" style="display:none">
+  ♡ <span id="fabBadge" style="font-size:11px;font-weight:700;margin-left:2px"></span>
+</button>
 
 <!-- HOME -->
 <div class="page active" id="page-home">
@@ -562,7 +770,7 @@
         <div class="footer-col-title">Contact</div>
         <div class="footer-links">
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">402.235.8179</div>
-          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="mailto:crystal@wallflower-relic.com" style="color:inherit">crystal@wallflower-relic.com</a></div>
+          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="/cdn-cgi/l/email-protection#2e4d5c575d5a4f426e594f4242484241594b5c035c4b42474d004d4143" style="color:inherit"><span class="__cf_email__" data-cfemail="84e7f6fdf7f0e5e8c4f3e5e8e8e2e8ebf3e1f6a9f6e1e8ede7aae7ebe9">[email&#160;protected]</span></a></div>
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">Omaha, Nebraska</div>
         </div>
       </div>
@@ -632,7 +840,7 @@
         <div class="footer-col-title">Contact</div>
         <div class="footer-links">
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">402.235.8179</div>
-          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="mailto:crystal@wallflower-relic.com" style="color:inherit">crystal@wallflower-relic.com</a></div>
+          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="/cdn-cgi/l/email-protection#95f6e7ece6e1f4f9d5e2f4f9f9f3f9fae2f0e7b8e7f0f9fcf6bbf6faf8" style="color:inherit"><span class="__cf_email__" data-cfemail="fb988982888f9a97bb8c9a97979d97948c9e89d6899e979298d5989496">[email&#160;protected]</span></a></div>
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">Omaha, Nebraska</div>
         </div>
       </div>
@@ -792,7 +1000,7 @@
         <div class="footer-col-title">Contact</div>
         <div class="footer-links">
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">402.235.8179</div>
-          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="mailto:crystal@wallflower-relic.com" style="color:inherit">crystal@wallflower-relic.com</a></div>
+          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="/cdn-cgi/l/email-protection#a6c5d4dfd5d2c7cae6d1c7cacac0cac9d1c3d48bd4c3cacfc588c5c9cb" style="color:inherit"><span class="__cf_email__" data-cfemail="0665747f7572676a4671676a6a606a697163742b74636a6f652865696b">[email&#160;protected]</span></a></div>
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">Omaha, Nebraska</div>
         </div>
       </div>
@@ -876,7 +1084,7 @@
         <div class="footer-col-title">Contact</div>
         <div class="footer-links">
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">402.235.8179</div>
-          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="mailto:crystal@wallflower-relic.com" style="color:inherit">crystal@wallflower-relic.com</a></div>
+          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="/cdn-cgi/l/email-protection#3f5c4d464c4b5e537f485e5353595350485a4d124d5a53565c115c5052" style="color:inherit"><span class="__cf_email__" data-cfemail="8eedfcf7fdfaefe2cef9efe2e2e8e2e1f9ebfca3fcebe2e7eda0ede1e3">[email&#160;protected]</span></a></div>
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">Omaha, Nebraska</div>
         </div>
       </div>
@@ -946,7 +1154,7 @@
         <div class="footer-col-title">Contact</div>
         <div class="footer-links">
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">402.235.8179</div>
-          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="mailto:crystal@wallflower-relic.com" style="color:inherit">crystal@wallflower-relic.com</a></div>
+          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="/cdn-cgi/l/email-protection#197a6b606a6d7875596e7875757f75766e7c6b346b7c75707a377a7674" style="color:inherit"><span class="__cf_email__" data-cfemail="2f4c5d565c5b4e436f584e4343494340584a5d025d4a43464c014c4042">[email&#160;protected]</span></a></div>
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">Omaha, Nebraska</div>
         </div>
       </div>
@@ -1341,7 +1549,7 @@
         <div class="footer-col-title">Contact</div>
         <div class="footer-links">
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">402.235.8179</div>
-          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="mailto:crystal@wallflower-relic.com" style="color:inherit">crystal@wallflower-relic.com</a></div>
+          <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)"><a href="/cdn-cgi/l/email-protection#9bf8e9e2e8effaf7dbecfaf7f7fdf7f4ecfee9b6e9fef7f2f8b5f8f4f6" style="color:inherit"><span class="__cf_email__" data-cfemail="e08392999394818ca097818c8c868c8f978592cd92858c8983ce838f8d">[email&#160;protected]</span></a></div>
           <div class="footer-link" style="cursor:default;color:rgba(255,255,255,0.28)">Omaha, Nebraska</div>
         </div>
       </div>
@@ -1368,7 +1576,7 @@
         <div style="font-size:15px;color:rgba(255,255,255,0.38);line-height:1.75;max-width:400px;margin-bottom:48px">Tell us about your event and which pieces caught your eye. We'll confirm availability and put together a custom quote within 24 hours.</div>
         <div class="contact-details">
           <div><div class="contact-detail-label">Phone</div><div class="contact-detail-val">402.235.8179</div></div>
-          <div><div class="contact-detail-label">Email</div><div class="contact-detail-val"><a href="mailto:crystal@wallflower-relic.com" style="color:inherit">crystal@wallflower-relic.com</a></div></div>
+          <div><div class="contact-detail-label">Email</div><div class="contact-detail-val"><a href="/cdn-cgi/l/email-protection#ef8c9d969c9b8e83af988e8383898380988a9dc29d8a83868cc18c8082" style="color:inherit"><span class="__cf_email__" data-cfemail="4f2c3d363c3b2e230f382e2323292320382a3d623d2a23262c612c2022">[email&#160;protected]</span></a></div></div>
           <div><div class="contact-detail-label">Service Area</div><div class="contact-detail-val">Omaha, Nebraska</div></div>
         </div>
       </div>
@@ -1422,7 +1630,7 @@
 </div>
 <button class="wishlist-fab" onclick="toggleWishlistSidebar()">♡</button>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const SUPABASE_URL = "https://mgwvpkezvuswvbkzwysx.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nd3Zwa2V6dnVzd3Zia3p3eXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODgyMjksImV4cCI6MjA4ODc2NDIyOX0.Tql9O5el3gr-xusH-icGfQEg0cCHHRUOdyvAq_DHlfs";
 
@@ -1670,6 +1878,22 @@ function updateWishlistUI() {
 }
 function toggleWishlistSidebar() { document.getElementById('wishlistSidebar').classList.toggle('open'); }
 
+function toggleMobileMenu() {
+  const btn = document.getElementById('mobileMenuBtn')
+  const drawer = document.getElementById('mobileNavDrawer')
+  btn.classList.toggle('open')
+  drawer.classList.toggle('open')
+  document.body.style.overflow = drawer.classList.contains('open') ? 'hidden' : ''
+}
+
+function mobileNav(page) {
+  toggleMobileMenu()
+  setTimeout(() => {
+    if (page === 'inventory') { showPage('inventory'); renderInventory() }
+    else showPage(page)
+  }, 200)
+}
+
 async function submitWishlist() {
   if (!document.getElementById('wl-name').value || !document.getElementById('wl-email').value) { alert('Please enter your name and email.'); return; }
   const btn = document.getElementById('wlSubmitBtn');
@@ -1788,32 +2012,4 @@ function eduGoTo(n) {
   }
 }
 function eduNext() { eduGoTo((eduCurrent + 1) % eduTotal); }
-function eduPrev() { eduGoTo((eduCurrent - 1 + eduTotal) % eduTotal); }
-
-// ── Hero Slideshow ────────────────────────────────────────────────────────────
-var heroIndex = 0;
-var heroSlides = null;
-var heroDots = null;
-var heroTimer = null;
-
-function goSlide(n) {
-  if (!heroSlides) heroSlides = document.querySelectorAll('.hero-slide');
-  if (!heroDots) heroDots = document.querySelectorAll('.hero-dot');
-  heroSlides[heroIndex].classList.remove('active');
-  heroDots[heroIndex].classList.remove('active');
-  heroIndex = (n + heroSlides.length) % heroSlides.length;
-  heroSlides[heroIndex].classList.add('active');
-  heroDots[heroIndex].classList.add('active');
-  clearInterval(heroTimer);
-  heroTimer = setInterval(function() { goSlide(heroIndex + 1); }, 5000);
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-  renderFaq(); eduGoTo(0); loadInventory().then(() => loadFeatured());
-  heroSlides = document.querySelectorAll('.hero-slide');
-  heroDots = document.querySelectorAll('.hero-dot');
-  heroTimer = setInterval(function() { goSlide(heroIndex + 1); }, 5000);
-});
-</script>
-</body>
-</html>
+function eduPrev() { eduGoTo((eduCurrent - 1 + eduTota
