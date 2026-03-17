@@ -1688,6 +1688,13 @@ let INVENTORY = [];
 let wishlist = [], wishlistQtys = {};
 let currentPageId = "all", currentSubFilter = null, currentItemId = null, currentSearchQuery = null;
 
+// ── Init on load ──────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  loadInventory();
+  loadFeatured();
+  renderFaq();
+});
+
 // ── Load Inventory ────────────────────────────────────────────────────────────
 async function loadInventory() {
   try {
